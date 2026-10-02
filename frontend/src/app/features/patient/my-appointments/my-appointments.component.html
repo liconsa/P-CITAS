@@ -1,0 +1,96 @@
+<div class="appointments-wrapper">
+  <div class="card">
+
+    <div class="card-header">
+      <div class="icon-circle">🗓️</div>
+      <h2>Gestión de Citas</h2>
+      <p class="subtitle">Consulta tus próximas consultas programadas y tu historial de citas pasadas.</p>
+    </div>
+
+    <!-- Alerta dinámica -->
+    <div *ngIf="mensaje" class="alert" [ngClass]="{'success': mensaje.includes('✅'), 'error': mensaje.includes('❌')}">
+      {{ mensaje }}
+    </div>
+
+    <!-- SECCIÓN 1: CITAS PENDIENTES -->
+    <div class="section-block">
+      <h3 class="section-title">📌 Citas Pendientes</h3>
+
+      <div class="table-container" *ngIf="citasPendientes.length > 0; else noPendientes">
+        <table class="hospital-table">
+          <thead>
+            <tr>
+              <th>Folio</th>
+              <th>Fecha y Hora</th>
+              <th>Médico</th>
+              <th>Especialidad</th>
+              <th>Costo</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cita of citasPendientes">
+              <td><strong>#{{ cita.id }}</strong></td>
+              <td>{{ cita.fecha_hora | date:'dd/MM/yyyy, h:mm a' }}</td>
+              <td><strong>{{ cita.medico_nombre }}</strong></td>
+              <td><span class="specialty-tag">{{ cita.medico_especialidad }}</span></td>
+              <td>${{ cita.precio }}</td>
+              <td><span class="badge pending">{{ cita.estado }}</span></td>
+              <td>
+                <button class="btn-danger" (click)="cancelarCita(cita.id)">
+                  Cancelar Cita
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #noPendientes>
+        <p class="empty-text">No tienes citas pendientes en este momento.</p>
+      </ng-template>
+    </div>
+
+    <hr class="divider">
+
+    <!-- SECCIÓN 2: HISTORIAL / CITAS PASADAS O CANCELADAS -->
+    <div class="section-block">
+      <h3 class="section-title">🗂️ Historial de Citas Anteriores</h3>
+
+      <div class="table-container" *ngIf="citasHistorial.length > 0; else noHistorial">
+        <table class="hospital-table">
+          <thead>
+            <tr>
+              <th>Folio</th>
+              <th>Fecha y Hora</th>
+              <th>Médico</th>
+              <th>Especialidad</th>
+              <th>Costo</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cita of citasHistorial">
+              <td><strong>#{{ cita.id }}</strong></td>
+              <td>{{ cita.fecha_hora | date:'dd/MM/yyyy, h:mm a' }}</td>
+              <td><strong>{{ cita.medico_nombre }}</strong></td>
+              <td><span class="specialty-tag">{{ cita.medico_especialidad }}</span></td>
+              <td>${{ cita.precio }}</td>
+              <td>
+                <span class="badge" [ngClass]="{'cancelled': cita.estado === 'CANCELADA', 'completed': cita.estado === 'COMPLETADA'}">
+                  {{ cita.estado }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #noHistorial>
+        <p class="empty-text">Aún no hay registros en tu historial de citas pasadas.</p>
+      </ng-template>
+    </div>
+
+  </div>
+</div>

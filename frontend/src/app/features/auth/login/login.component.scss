@@ -1,0 +1,222 @@
+// Paleta de colores
+$primary: #0277bd;
+$primary-light: #58a5f0;
+$background: #e3f2fd;
+$bg-darker: #b3e5fc;
+$white: #ffffff;
+$text-main: #333333;
+$text-muted: #777777;
+$input-bg: #f8fafc;
+
+/* 1. CONTENEDOR PRINCIPAL FIJO (Bloquea cualquier scroll) */
+.login-wrapper {
+  position: fixed;
+  inset: 0; // Es lo mismo que top: 0, left: 0, right: 0, bottom: 0
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, $background 0%, $bg-darker 100%);
+  overflow: hidden; // Destruye el scrollbar
+  z-index: 2000;
+  padding: 1rem; // Pequeño margen para que la tarjeta nunca toque los bordes del monitor
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  // Animación de transparencia (Fade-in)
+  animation: pageFadeIn 0.8s ease-out forwards;
+}
+
+/* 2. TARJETA RESPONSIVE (Se adapta a la pantalla) */
+.login-container {
+  display: flex;
+  width: 100%;
+  max-width: 700px;
+  height: auto; // Deja que el contenido decida la altura
+  max-height: 85vh; // NUNCA será más alta que el 85% de tu pantalla actual
+  background: $white;
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+  overflow: hidden;
+
+  opacity: 0;
+  animation: cardSlideUpFade 0.8s ease-out 0.2s forwards;
+}
+
+// Lado Izquierdo (Imagen)
+.login-graphic {
+  flex: 1;
+  background: url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80') center/cover;
+  position: relative;
+  display: none; // Se oculta en celulares
+
+  @media (min-width: 768px) {
+    display: block;
+  }
+
+  .graphic-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom right, rgba($primary, 0.85), rgba(#01579b, 0.95));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: $white;
+    text-align: center;
+    padding: 1.5rem;
+
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.5rem); // Texto dinámico según pantalla
+      margin-bottom: 0.5rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+    p {
+      font-size: clamp(0.85rem, 2vw, 1rem);
+      opacity: 0.9;
+    }
+  }
+}
+
+// Lado Derecho (Formulario)
+.login-form-section {
+  flex: 1;
+  padding: clamp(1.5rem, 4vw, 2.5rem); // Padding dinámico (menos en laptop, más en monitor grande)
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow-y: auto; // Si la pantalla es MINÚSCULA, crea un mini scroll interno solo para el formulario
+
+  h2 {
+    color: $text-main;
+    font-size: clamp(1.5rem, 3vw, 1.8rem);
+    margin-bottom: 0.2rem;
+    text-align: center;
+  }
+  .subtitle {
+    color: $text-muted;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  background: $input-bg;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  border: 1.5px solid #dce1e6;
+  transition: all 0.3s ease;
+
+  &:focus-within {
+    background: $white;
+    border-color: $primary-light;
+    box-shadow: 0 4px 10px rgba($primary-light, 0.15);
+  }
+
+  .icon {
+    margin-right: 12px;
+    font-size: 1.1rem;
+    filter: grayscale(100%);
+    opacity: 0.5;
+  }
+
+  input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    font-size: 0.95rem;
+    color: $text-main;
+    outline: none;
+
+    &::placeholder { color: #a0aec0; }
+  }
+}
+
+.btn-primary {
+  background: linear-gradient(to right, $primary, $primary-light);
+  color: $white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: all 0.3s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba($primary, 0.3);
+  }
+
+  &:disabled {
+    background: #cbd5e1;
+    color: #94a3b8;
+    cursor: not-allowed;
+  }
+}
+
+.toggle-text {
+  text-align: center;
+  margin-top: 1rem;
+  color: $text-muted;
+  font-size: 0.85rem;
+
+  a {
+    color: $primary;
+    text-decoration: none;
+    font-weight: bold;
+    &:hover { color: darken($primary, 15%); text-decoration: underline; }
+  }
+}
+
+.alert {
+  padding: 0.8rem; border-radius: 8px; margin-bottom: 1rem; text-align: center; font-weight: 600; font-size: 0.9rem;
+  &.success { background: #e8f5e9; color: #2e7d32; }
+  &.error { background: #ffebee; color: #c62828; }
+}
+
+/* --- ANIMACIONES --- */
+@keyframes pageFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes cardSlideUpFade {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Ajuste extra para laptops pequeñas --- */
+@media (max-height: 650px) {
+  .login-form-section {
+    padding: 1.5rem;
+  }
+  .input-group {
+    padding: 0.5rem 1rem; // Encoge los inputs si falta espacio a lo alto
+  }
+}
+/* --- Animación interna para cambiar entre Login y Registro --- */
+.fade-in {
+  animation: contentFadeIn 0.4s ease-out forwards;
+}
+
+@keyframes contentFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-15px); // Un ligero deslizamiento desde la izquierda
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

@@ -1,0 +1,211 @@
+<div class="history-wrapper">
+  <div class="history-card institutional-form">
+
+    <!-- ENCABEZADO INSTITUCIONAL -->
+    <div class="institutional-header">
+      <div class="logo-area">🏥 HOSPITAL SYSTEM</div>
+      <div class="title-area">
+        <h2>HISTORIA CLÍNICA MÉDICA</h2>
+        <span>Expediente Electrónico de Salud</span>
+      </div>
+    </div>
+
+    <!-- Alertas -->
+    <div *ngIf="mensajeExito" class="alert success">{{ mensajeExito }}</div>
+    <div *ngIf="mensajeError" class="alert error">{{ mensajeError }}</div>
+
+    <form [formGroup]="historialForm" *ngIf="modoVista === 'formulario'">
+
+      <!-- ================= SECCIÓN I: IDENTIFICACIÓN ================= -->
+      <fieldset class="form-section">
+        <legend>I. Identificación del Paciente</legend>
+
+        <div class="grid-row">
+          <div class="field-box col-4">
+            <label>Apellido Paterno *</label>
+            <input type="text" formControlName="apellido_paterno" placeholder="Ej. Licona">
+          </div>
+          <div class="field-box col-4">
+            <label>Apellido Materno *</label>
+            <input type="text" formControlName="apellido_materno" placeholder="Ej. Garcés">
+          </div>
+          <div class="field-box col-4">
+            <label>Nombre(s) *</label>
+            <input type="text" formControlName="nombres" placeholder="Ej. Diego">
+          </div>
+        </div>
+
+        <div class="grid-row">
+          <div class="field-box col-8">
+            <label>CURP *</label>
+            <div class="curp-row">
+              <input type="text" formControlName="curp" placeholder="18 caracteres" maxlength="18" style="text-transform: uppercase;">
+              <button type="button" class="btn-verify" (click)="verificarCurpYAutocompletar()">Validar CURP</button>
+            </div>
+          </div>
+          <div class="field-box col-4">
+            <label>Teléfono Celular *</label>
+            <input type="tel" formControlName="telefono" placeholder="10 dígitos">
+          </div>
+        </div>
+
+        <!-- Bloque Automático del CURP -->
+        <div class="autofill-box" *ngIf="curpVerificado">
+          <div class="mini-field"><label>F. Nacimiento:</label> <input type="text" formControlName="fecha_nacimiento"></div>
+          <div class="mini-field"><label>Edad:</label> <input type="text" formControlName="edad"></div>
+          <div class="mini-field"><label>Sexo:</label> <input type="text" formControlName="genero"></div>
+          <div class="mini-field"><label>Lugar:</label> <input type="text" formControlName="lugar_nacimiento"></div>
+        </div>
+      </fieldset>
+
+
+      <!-- ================= SECCIÓN II: DOMICILIO ================= -->
+      <fieldset class="form-section">
+        <legend>II. Domicilio y Ubicación</legend>
+
+        <div class="grid-row">
+          <div class="field-box col-8">
+            <label>Calle y Número *</label>
+            <input type="text" formControlName="calle_numero" placeholder="Ej. Av. Insurgentes #123">
+          </div>
+          <div class="field-box col-4">
+            <label>C.P. *</label>
+            <input type="text" formControlName="codigo_postal" placeholder="00000" maxlength="5">
+          </div>
+        </div>
+
+        <div class="grid-row">
+          <div class="field-box col-6">
+            <label>Colonia / Barrio *</label>
+            <input type="text" formControlName="colonia">
+          </div>
+          <div class="field-box col-6">
+            <label>Municipio o Alcaldía *</label>
+            <input type="text" formControlName="municipio">
+          </div>
+        </div>
+      </fieldset>
+
+
+      <!-- ================= SECCIÓN III: ANTECEDENTES ================= -->
+      <fieldset class="form-section">
+        <legend>III. Antecedentes Heredofamiliares y Patológicos</legend>
+
+        <div class="antecedentes-table">
+          <div class="table-header">
+            <span>Enfermedad / Condición</span>
+            <span>¿Presenta Antecedente?</span>
+          </div>
+
+          <div class="table-row">
+            <span>Diabetes Mellitus</span>
+            <div class="radio-options">
+              <label><input type="radio" formControlName="ant_diabetes" value="SI"> Sí</label>
+              <label><input type="radio" formControlName="ant_diabetes" value="NO"> No</label>
+            </div>
+          </div>
+
+          <div class="table-row">
+            <span>Hipertensión Arterial</span>
+            <div class="radio-options">
+              <label><input type="radio" formControlName="ant_hipertension" value="SI"> Sí</label>
+              <label><input type="radio" formControlName="ant_hipertension" value="NO"> No</label>
+            </div>
+          </div>
+
+          <div class="table-row">
+            <span>Cardiopatías / Cáncer</span>
+            <div class="radio-options">
+              <label><input type="radio" formControlName="ant_cardiacos" value="SI"> Sí</label>
+              <label><input type="radio" formControlName="ant_cardiacos" value="NO"> No</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-row margin-top">
+          <div class="field-box col-4">
+            <label>Tipo de Sangre *</label>
+            <select formControlName="blood_type">
+              <option value="">Seleccione...</option>
+              <option value="A+">A+</option><option value="A-">A-</option>
+              <option value="B+">B+</option><option value="B-">B-</option>
+              <option value="AB+">AB+</option><option value="AB-">AB-</option>
+              <option value="O+">O+</option><option value="O-">O-</option>
+            </select>
+          </div>
+          <div class="field-box col-8">
+            <label>Alergias Conocidas</label>
+            <input type="text" formControlName="alergias_otro" placeholder="Medicamentos, alimentos, sustancias...">
+          </div>
+        </div>
+
+        <div class="grid-row">
+          <div class="field-box full">
+            <label>Enfermedades Crónicas / Patológicas Personales</label>
+            <input type="text" formControlName="enfermedades_otro" placeholder="Ej. Asma, insuficiencia, etc.">
+          </div>
+        </div>
+      </fieldset>
+
+
+      <!-- ================= SECCIÓN IV: CONDICIONES Y CLÍNICA ================= -->
+      <fieldset class="form-section">
+        <legend>IV. Capacidades y Notas del Paciente</legend>
+
+        <div class="grid-row">
+          <div class="field-box full">
+            <label>Discapacidades o Condiciones Especiales</label>
+            <input type="text" formControlName="discapacidades_otro" placeholder="Condición motriz, visual, auditiva...">
+          </div>
+        </div>
+
+        <div class="grid-row">
+          <div class="field-box full">
+            <label>Observaciones o Tratamientos Actuales</label>
+            <textarea formControlName="additional_notes" rows="2" placeholder="Información relevante..."></textarea>
+          </div>
+        </div>
+
+        <!-- Zona exclusiva del médico -->
+        <div class="field-box full medico-box" *ngIf="esMedico">
+          <label class="medico-label">🩺 Padecimiento Actual / Diagnóstico Médico Oficial</label>
+          <textarea formControlName="diagnosticos_medicos" rows="3" placeholder="Notas clínicas del especialista..."></textarea>
+        </div>
+      </fieldset>
+
+      <div class="form-actions">
+        <button type="button" class="btn-institutional" (click)="modoVista = 'resumen'" [disabled]="!curpVerificado">Ver Resumen y Validar 👁️</button>
+      </div>
+
+    </form>
+
+
+    <!-- ================= VISTA PREVIA INSTITUCIONAL ================= -->
+    <div class="summary-container" *ngIf="modoVista === 'resumen'">
+      <div class="summary-title">📄 Cédula de Registro del Expediente Clínico</div>
+
+      <div class="summary-box-grid">
+        <div class="sum-item"><strong>Paciente:</strong> {{ historialForm.value.apellido_paterno }} {{ historialForm.value.apellido_materno }} {{ historialForm.value.nombres }}</div>
+        <div class="sum-item"><strong>CURP:</strong> {{ historialForm.value.curp }}</div>
+        <div class="sum-item"><strong>Nacimiento:</strong> {{ historialForm.value.fecha_nacimiento }} ({{ historialForm.value.edad }})</div>
+        <div class="sum-item"><strong>Género / Origen:</strong> {{ historialForm.value.genero }} / {{ historialForm.value.lugar_nacimiento }}</div>
+        <div class="sum-item"><strong>Teléfono:</strong> {{ historialForm.value.telefono }}</div>
+        <div class="sum-item full"><strong>Domicilio:</strong> {{ historialForm.value.calle_numero }}, Col. {{ historialForm.value.colonia }}, C.P. {{ historialForm.value.codigo_postal }}, {{ historialForm.value.municipio }}.</div>
+        <div class="sum-item"><strong>Grupo Sanguíneo:</strong> {{ historialForm.value.blood_type }}</div>
+        <div class="sum-item"><strong>Diabetes (Fam):</strong> {{ historialForm.value.ant_diabetes || 'No especificado' }}</div>
+        <div class="sum-item"><strong>Hipertensión (Fam):</strong> {{ historialForm.value.ant_hipertension || 'No especificado' }}</div>
+        <div class="sum-item"><strong>Alergias:</strong> {{ historialForm.value.alergias_otro || 'Ninguna' }}</div>
+        <div class="sum-item full" *ngIf="esMedico || historialForm.value.diagnosticos_medicos">
+          <strong>Diagnóstico / Padecimiento Actual (Médico):</strong>
+          <span class="clinical-text">{{ historialForm.value.diagnosticos_medicos || 'Pendiente de valoración médica' }}</span>
+        </div>
+      </div>
+
+      <div class="form-actions between">
+        <button type="button" class="btn-secondary" (click)="editarDatos()">✏️ Modificar Datos</button>
+        <button type="button" class="btn-institutional" (click)="guardarHistorial()">💾 Guardar en el Servidor</button>
+      </div>
+    </div>
+
+  </div>
+</div>

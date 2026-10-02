@@ -1,0 +1,112 @@
+<div class="split-layout">
+
+  <!-- PANEL IZQUIERDO: FORMULARIO PRINCIPAL -->
+  <div class="left-panel card">
+    <div class="card-header">
+      <div class="icon-circle">🏥</div>
+      <h2>Registro de Cita</h2>
+      <p class="subtitle">Completa los pasos para agendar tu consulta.</p>
+    </div>
+
+    <div *ngIf="mensaje" class="alert" [ngClass]="{'success': mensaje.includes('✅'), 'error': mensaje.includes('❌')}">
+      {{ mensaje }}
+    </div>
+
+    <form [formGroup]="citaForm" (ngSubmit)="agendar()">
+
+<!-- Paso 1: Médico -->
+      <div class="form-group">
+        <label>👩‍⚕️ 1. Selecciona a tu Médico</label>
+        <div class="input-wrapper">
+          <select formControlName="medico_id" (change)="onDoctorSeleccionado()">
+            <option value="" disabled selected>Elige un especialista...</option>
+            <!-- Muestra el nombre y la especialidad real de la base de datos -->
+            <option *ngFor="let doc of doctores" [value]="doc.id">
+              Dr(a). {{ doc.nombre }} - {{ doc.especialidad }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Paso 2: Resumen de Fecha Seleccionada -->
+      <div class="form-group">
+        <label>🕒 2. Fecha y Hora de la Consulta</label>
+        <div class="input-wrapper date-display" [class.active]="panelDerecho === 'calendario'">
+          <!-- Este campo es de solo lectura, refleja lo que se elija en el lado derecho -->
+          <input type="text" readonly placeholder="Selecciona en el panel derecho ➔"
+                 [value]="citaForm.get('fecha_hora')?.value ? (citaForm.get('fecha_hora')?.value | date:'dd/MM/yyyy HH:mm') : ''">
+        </div>
+        <small class="info-text">🗓️️ Regla SAT: Mínimo 48h de anticipación.</small>
+      </div>
+
+      <button type="submit" class="btn-primary" [disabled]="citaForm.invalid">
+        <span>Confirmar Cita</span>
+        <span class="btn-icon">➔</span>
+      </button>
+    </form>
+  </div>
+
+  <!-- PANEL DERECHO: INTERACCIÓN Y CALENDARIO -->
+  <div class="right-panel card">
+
+    <!-- Estado Inicial -->
+    <div class="empty-state" *ngIf="panelDerecho === 'vacio'">
+      <div class="icon-large">📅</div>
+      <h3>Panel de Disponibilidad</h3>
+      <p>Selecciona un médico en el panel izquierdo para visualizar su agenda y horarios disponibles.</p>
+    </div>
+
+    <!-- Estado de Calendario -->
+    <div class="calendar-state slide-in" *ngIf="panelDerecho === 'calendario'">
+      <h3>Agenda del Médico</h3>
+
+      <div class="sat-calendar">
+        <div class="calendar-header">
+          <button type="button" (click)="cambiarMes(-1)">◀</button>
+          <h4>{{ nombresMeses[mesActual.getMonth()] }} {{ mesActual.getFullYear() }}</h4>
+          <button type="button" (click)="cambiarMes(1)">▶</button>
+        </div>
+
+        <div class="calendar-grid weekdays">
+          <div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div>
+        </div>
+
+        <div class="calendar-grid days">
+          <div *ngFor="let d of diasCalendario"
+               class="day-box"
+               [class.empty]="!d"
+               [class.disabled]="d?.deshabilitado"
+               [class.full]="d?.lleno && !d?.deshabilitado"
+               [class.available]="d && !d.deshabilitado && !d.lleno"
+               [class.selected]="diaSeleccionado?.dia === d?.dia"
+               (click)="seleccionarDia(d)">
+            {{ d?.dia }}
+          </div>
+        </div>
+
+        <div class="calendar-legend">
+          <span class="dot available"></span> Disponible
+          <span class="dot full"></span> Lleno
+          <span class="dot disabled"></span> Inhábil
+        </div>
+      </div>
+
+      <!-- HORARIOS -->
+      <div class="time-slots-container slide-in" *ngIf="diaSeleccionado">
+        <h4>Horarios para el día {{ diaSeleccionado.dia }}</h4>
+        <div class="time-slots">
+          <p *ngIf="horasDisponibles.length === 0" class="no-hours">No hay horarios disponibles.</p>
+          <button type="button"
+                  *ngFor="let hora of horasDisponibles"
+                  class="time-btn"
+                  [class.active]="horaSeleccionada === hora"
+                  (click)="seleccionarHora(hora)">
+            {{ hora }}
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

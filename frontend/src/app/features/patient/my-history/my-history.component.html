@@ -1,0 +1,28 @@
+<div class="history-container">
+  <h2>Mi Historial de Citas</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Fecha y Hora</th>
+        <th>ID Médico</th>
+        <th>Estado</th>
+        <th>Costo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let cita of historialCitas">
+        <td>{{ cita.fecha_hora | date:'medium' }}</td>
+        <td>{{ cita.medico_id }}</td>
+        <td>
+          <!-- Colorear según el estado -->
+          <span [ngClass]="{'text-green': cita.estado === 'COMPLETADA', 'text-red': cita.estado === 'CANCELADA', 'text-orange': cita.estado === 'PENDIENTE'}">
+            {{ cita.estado }}
+          </span>
+        </td>
+        <td>${{ cita.precio }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <p *ngIf="historialCitas.length === 0">Aún no tienes citas registradas en tu historial.</p>
+</div>

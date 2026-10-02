@@ -1,0 +1,136 @@
+$primary: #0277bd;
+$primary-light: #58a5f0;
+$white: #ffffff;
+$text-main: #2c3e50;
+$text-muted: #7f8c8d;
+$bg-card: #f8fafc;
+$radius: 16px;
+
+.dashboard-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  animation: fadeSlideUp 0.5s ease-out;
+}
+
+// Banner de Bienvenida
+.welcome-banner {
+  background: linear-gradient(135deg, $primary 0%, #01579b 100%);
+  border-radius: $radius;
+  padding: 3rem;
+  color: $white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+  box-shadow: 0 10px 25px rgba($primary, 0.2);
+
+  .banner-content {
+    max-width: 600px;
+    h1 { font-size: 2.2rem; margin: 0 0 1rem 0; font-weight: 800; }
+    p { font-size: 1.1rem; opacity: 0.9; margin: 0; line-height: 1.5; }
+  }
+
+  .banner-illustration {
+    font-size: 6rem;
+    opacity: 0.8;
+  }
+}
+
+// Tarjetas de Acción
+.quick-actions {
+  margin-bottom: 4rem;
+  h2 { color: $text-main; margin-bottom: 1.5rem; font-size: 1.5rem; }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .action-card {
+    background: $white;
+    border-radius: $radius;
+    padding: 2rem;
+    text-decoration: none;
+    color: $text-main;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+
+    .card-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    h3 { margin: 0 0 0.5rem 0; color: $primary; font-size: 1.3rem; }
+    p { color: $text-muted; font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.5rem; flex-grow: 1; }
+
+    .card-link {
+      font-weight: 700;
+      color: $primary-light;
+      transition: transform 0.2s;
+    }
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+      border-color: $primary-light;
+
+      .card-link { transform: translateX(5px); }
+    }
+
+    &.primary-card {
+      background: rgba($primary, 0.03);
+      border: 1.5px solid rgba($primary, 0.2);
+    }
+  }
+}
+
+// Novedades
+.hospital-news {
+  h2 { color: $text-main; margin-bottom: 1.5rem; font-size: 1.5rem; }
+
+  .news-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .news-item {
+    background: $white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    border-left: 4px solid $primary;
+
+    .news-date {
+      background: $bg-card;
+      padding: 0.8rem;
+      border-radius: 8px;
+      font-weight: 700;
+      color: $primary;
+      text-align: center;
+      min-width: 60px;
+    }
+    .news-text {
+      h4 { margin: 0 0 0.3rem 0; color: $text-main; font-size: 1.1rem; }
+      p { margin: 0; color: $text-muted; font-size: 0.9rem; }
+    }
+  }
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .welcome-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 2rem;
+    .banner-illustration { display: none; }
+  }
+}

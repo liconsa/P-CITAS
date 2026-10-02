@@ -1,0 +1,20 @@
+<div class="agenda-container">
+  <h2>Mi Agenda de Pacientes</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Fecha y Hora</th>
+        <th>ID Paciente</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let cita of citas">
+        <td>{{ cita.fecha_hora | date:'short' }}</td>
+        <td>{{ cita.paciente_id }}</td>
+        <td>{{ cita.estado }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <p *ngIf="citas.length === 0">No tienes citas programadas por el momento.</p>
+</div>

@@ -1,0 +1,67 @@
+<div class="login-wrapper">
+  <!-- El contenedor principal con animación de entrada -->
+  <div class="login-container slide-up-fade">
+
+    <!-- Lado Izquierdo: Gráfico y Branding -->
+    <div class="login-graphic">
+      <div class="graphic-overlay">
+        <h1>P-CITAS</h1>
+        <p>Sistema de Gestión Hospitalaria</p>
+      </div>
+    </div>
+
+    <!-- Lado Derecho: Formularios -->
+    <div class="login-form-section">
+
+      <!-- VISTA DE LOGIN -->
+      <div *ngIf="vista === 'login'" class="fade-in">
+        <h2>Iniciar Sesión</h2>
+        <p class="subtitle">Bienvenido al portal médico</p>
+
+        <div *ngIf="exitoMensaje" class="alert success">{{ exitoMensaje }}</div>
+        <div *ngIf="errorMensaje" class="alert error">{{ errorMensaje }}</div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+          <div class="input-group">
+            <span class="icon">✉️</span>
+            <input type="email" formControlName="correo" placeholder="Correo Electrónico">
+          </div>
+          <div class="input-group">
+            <span class="icon">🔒</span>
+            <input type="password" formControlName="password" placeholder="Contraseña">
+          </div>
+          <button type="submit" [disabled]="loginForm.invalid" class="btn-primary">Ingresar</button>
+        </form>
+
+        <p class="toggle-text">¿Eres paciente nuevo? <a href="javascript:void(0)" (click)="cambiarVista('registro')">Crea tu cuenta</a></p>
+      </div>
+
+      <!-- VISTA DE REGISTRO -->
+      <div *ngIf="vista === 'registro'" class="fade-in">
+        <h2>Registrarse</h2>
+        <p class="subtitle">Crea tu perfil de paciente</p>
+
+        <div *ngIf="errorMensaje" class="alert error">{{ errorMensaje }}</div>
+
+        <form [formGroup]="registroForm" (ngSubmit)="onRegistro()">
+          <div class="input-group">
+            <span class="icon">👤</span>
+            <input type="text" formControlName="nombre" placeholder="Nombre Completo">
+          </div>
+          <div class="input-group">
+            <span class="icon">✉️</span>
+            <input type="email" formControlName="correo" placeholder="Correo Electrónico">
+          </div>
+          <div class="input-group">
+            <span class="icon">🔒</span>
+            <input type="password" formControlName="password" placeholder="Crea una contraseña">
+          </div>
+          <button type="submit" [disabled]="registroForm.invalid" class="btn-primary">Registrarse</button>
+        </form>
+
+        <p class="toggle-text">¿Ya tienes cuenta? <a href="javascript:void(0)" (click)="cambiarVista('login')">Inicia sesión</a></p>
+      </div>
+
+    </div>
+  </div>
+</div>

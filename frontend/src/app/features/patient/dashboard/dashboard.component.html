@@ -1,0 +1,64 @@
+<div class="dashboard-wrapper">
+  <!-- Banner Principal -->
+  <div class="welcome-banner">
+    <div class="banner-content">
+      <h1>Bienvenido al Portal Médico, {{ nombrePaciente }}</h1>
+      <p>Tu salud es nuestra prioridad. Gestiona tus consultas, revisa tu historial y mantente al día con nuestros servicios hospitalarios.</p>
+    </div>
+    <div class="banner-illustration">
+      🏥
+    </div>
+  </div>
+
+  <!-- Sección de Accesos Rápidos -->
+  <div class="quick-actions">
+    <h2>¿Qué necesitas hacer hoy?</h2>
+
+    <div class="cards-grid">
+      <!-- Tarjeta 1: Agendar -->
+      <a routerLink="/patient/schedule" class="action-card primary-card">
+        <div class="card-icon">📅</div>
+        <h3>Agendar Nueva Cita</h3>
+        <p>Consulta la disponibilidad de nuestros especialistas y reserva tu espacio.</p>
+        <span class="card-link">Comenzar ➔</span>
+      </a>
+
+      <!-- Tarjeta 2: Mis Citas -->
+      <a routerLink="/patient/appointments" class="action-card">
+        <div class="card-icon">📋</div>
+        <h3>Mis Citas Pendientes</h3>
+        <p>Revisa, gestiona o cancela las consultas que tienes programadas.</p>
+        <span class="card-link">Ver citas ➔</span>
+      </a>
+
+      <!-- Tarjeta 3: Historial -->
+      <a routerLink="/patient/history" class="action-card">
+        <div class="card-icon">🗂️</div>
+        <h3>Historial Clínico</h3>
+        <p>Accede al registro de tus consultas pasadas y recetas emitidas.</p>
+        <span class="card-link">Consultar ➔</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Sección de Novedades del Hospital -->
+  <div class="hospital-news">
+    <h2>Novedades y Eventos</h2>
+    <div class="news-container">
+      <div class="news-item">
+        <div class="news-date">Oct 15</div>
+        <div class="news-text">
+          <h4>Campaña de Vacunación contra la Influenza</h4>
+          <p>Acude a nuestras instalaciones para recibir tu dosis anual de forma gratuita.</p>
+        </div>
+      </div>
+      <div class="news-item">
+        <div class="news-date">Oct 20</div>
+        <div class="news-text">
+          <h4>Nuevos Especialistas en Cardiología</h4>
+          <p>Le damos la bienvenida al Dr. Hernández, experto en salud cardiovascular.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

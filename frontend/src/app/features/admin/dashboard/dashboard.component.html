@@ -1,0 +1,42 @@
+<div class="admin-dashboard-container">
+  <h2>Panel de Administración (Control Total)</h2>
+
+  <div class="crear-usuario-section">
+    <h3>Registrar Nuevo Personal</h3>
+    <form [formGroup]="usuarioForm" (ngSubmit)="crearUsuario()">
+      <input type="text" formControlName="nombre" placeholder="Nombre completo" />
+      <input type="email" formControlName="correo" placeholder="Correo electrónico" />
+      <input type="password" formControlName="password" placeholder="Contraseña" />
+      <select formControlName="rol">
+        <option value="medico">Médico</option>
+        <option value="recepcionista">Recepcionista</option>
+        <option value="cajero">Cajero</option>
+        <option value="administrador">Administrador</option>
+      </select>
+      <button type="submit" [disabled]="usuarioForm.invalid">Registrar Usuario</button>
+    </form>
+    <p *ngIf="mensaje">{{ mensaje }}</p>
+  </div>
+
+  <div class="lista-usuarios-section">
+    <h3>Usuarios Registrados en el Sistema</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Rol</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of usuarios">
+          <td>{{ user.id }}</td>
+          <td>{{ user.nombre }}</td>
+          <td>{{ user.correo }}</td>
+          <td>{{ user.rol }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

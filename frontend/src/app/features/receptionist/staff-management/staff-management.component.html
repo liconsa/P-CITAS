@@ -1,0 +1,27 @@
+<div class="staff-container">
+  <h2>Gestión de Personal Médico</h2>
+  <p *ngIf="mensaje" class="alert">{{ mensaje }}</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Correo</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let doc of doctores">
+        <td>{{ doc.nombre }}</td>
+        <td>{{ doc.correo }}</td>
+        <td>{{ doc.activo ? 'Activo (Alta)' : 'Inactivo (Baja)' }}</td>
+        <td>
+          <button (click)="cambiarEstado(doc.id, doc.activo)">
+            {{ doc.activo ? 'Dar de Baja' : 'Dar de Alta' }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

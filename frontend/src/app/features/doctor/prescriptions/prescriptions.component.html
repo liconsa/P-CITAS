@@ -1,0 +1,23 @@
+<div class="prescriptions-container">
+  <h2>Generar Receta Médica</h2>
+  <form [formGroup]="recetaForm" (ngSubmit)="generarReceta()">
+    <div>
+      <label>ID del Paciente:</label>
+      <input type="number" formControlName="paciente_id" />
+    </div>
+
+    <div>
+      <label>Diagnóstico:</label>
+      <textarea formControlName="diagnostico" rows="3"></textarea>
+    </div>
+
+    <div>
+      <label>Medicamentos e Indicaciones:</label>
+      <textarea formControlName="medicamentos" rows="4" placeholder="Ej: Paracetamol 500mg cada 8 horas"></textarea>
+    </div>
+
+    <button type="submit" [disabled]="recetaForm.invalid">Guardar Receta</button>
+  </form>
+
+  <p *ngIf="mensaje">{{ mensaje }}</p>
+</div>
