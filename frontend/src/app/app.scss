@@ -1,0 +1,131 @@
+// Paleta de colores
+$primary: #0277bd;
+$bg-light: #e3f2fd;
+$bg-darker: #b3e5fc;
+$white: #ffffff;
+$text-main: #333333;
+$text-muted: #777777;
+$danger: #d32f2f;
+$radius: 8px;
+
+/* --- BARRA DE NAVEGACIÓN SUPERIOR --- */
+header {
+  background-color: $white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: transform 0.3s ease-in-out;
+
+  // Clase dinámica para ocultar la barra al hacer scroll (si la activas en tu TS)
+  &.hidden {
+    transform: translateY(-100%);
+  }
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+
+  .logo {
+    h1 {
+      color: $primary;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .nav-links {
+    list-style: none; // Quita los puntos negros de la lista
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin: 0;
+    padding: 0;
+
+    li {
+      a {
+        text-decoration: none;
+        color: $text-muted;
+        font-weight: 600;
+        font-size: 0.95rem;
+        padding: 0.6rem 1rem;
+        border-radius: $radius;
+        transition: all 0.2s ease-in-out;
+
+        &:hover, &.active {
+          color: $primary;
+          background-color: rgba($primary, 0.08);
+        }
+      }
+    }
+
+    /* Botón de cerrar sesión */
+    .logout-btn {
+      background-color: transparent;
+      color: $danger;
+      border: 1.5px solid rgba($danger, 0.5);
+      padding: 0.5rem 1.2rem;
+      border-radius: $radius;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-left: 1rem;
+
+      &:hover {
+        background-color: $danger;
+        color: $white;
+        border-color: $danger;
+        box-shadow: 0 4px 10px rgba($danger, 0.2);
+      }
+    }
+  }
+}
+
+/* --- CONTENEDOR PRINCIPAL DE TODAS LAS VISTAS --- */
+main {
+  // Fondo azul suave que abarca toda la pantalla
+  background: linear-gradient(135deg, $bg-light 0%, $bg-darker 100%);
+  min-height: 100vh;
+
+  // Padding top de 90px para que el contenido no quede escondido detrás del header fijo
+  padding: 90px 2rem 2rem 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-sizing: border-box;
+}
+
+/* --- DISEÑO RESPONSIVO PARA CELULARES --- */
+@media (max-width: 768px) {
+  nav {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+
+    .nav-links {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+
+      .logout-btn {
+        margin-left: 0;
+        margin-top: 0.5rem;
+      }
+    }
+  }
+
+  main {
+    padding-top: 140px; // Más espacio en móviles porque el menú es más alto
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}

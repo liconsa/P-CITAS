@@ -1,0 +1,24 @@
+from fastapi import FastAPI
+from app.core.database import engine, Base
+from fastapi.middleware.cors import CORSMiddleware
+from app.models import user, appointment
+from app.models.medical_history import MedicalHistory # <- Mantenemos esto para crear la tabla
+from app.api import routes_auth, routes_patient, routes_doctor
+
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(title="Gestor de Citas Médicas API")
+
+# Registro de rutas modulares
+app.include_router(routes_auth.router)
+app.include_router(routes_patient.router)
+app.include_router(routes_doctor.router)
+
+# Configuración estricta de CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)

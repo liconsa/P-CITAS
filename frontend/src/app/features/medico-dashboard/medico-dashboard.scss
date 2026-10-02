@@ -1,0 +1,103 @@
+.medico-container {
+  min-height: 100vh;
+  background-color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+
+  .dashboard-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      .logo-box {
+        background-color: #2563eb;
+        color: #ffffff;
+        font-weight: 700;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+      }
+
+      span {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #1e3a8a;
+      }
+    }
+
+    .btn-logout {
+      background: #f1f5f9;
+      color: #334155;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+    }
+  }
+
+  .dashboard-main {
+    flex: 1;
+    max-width: 72rem;
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem;
+
+    .welcome-card {
+      background: #ffffff;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+
+      h2 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+      }
+
+      p {
+        font-size: 0.875rem;
+        color: #64748b;
+        margin-top: 0.25rem;
+      }
+    }
+
+    .content-card {
+      background: #ffffff;
+      border-radius: 1rem;
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+
+      .card-title {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #f1f5f9;
+        font-weight: 700;
+        color: #1e293b;
+      }
+
+      .empty-state {
+        padding: 2.5rem;
+        text-align: center;
+        color: #94a3b8;
+        font-size: 0.875rem;
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+// Variables personalizadas o estilos globales encapsulados si los necesitas
+$primary-blue: #2563eb;
+$bg-light: #f8fafc;
+
+.hospital-card {
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  }
+}
+
+// Puedes complementar clases de Tailwind con mixins o reglas SCSS puras
+table {
+  th, td {
+    white-space: nowrap;
+  }
+}

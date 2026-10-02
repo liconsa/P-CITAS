@@ -1,0 +1,45 @@
+<header *ngIf="authService.estaAutenticado()">
+  <nav>
+    <!-- LOGO CLICKEABLE: Redirige al dashboard según el rol o por defecto al de paciente -->
+    <div class="logo">
+      <a routerLink="/patient/dashboard" class="logo-link">
+        <h1>Hospital System</h1>
+      </a>
+    </div>
+
+    <ul class="nav-links">
+      <!-- Menú Administrador -->
+      <ng-container *ngIf="authService.obtenerRolActual() === 'administrador'">
+        <li><a routerLink="/admin" routerLinkActive="active">Gestión de Usuarios</a></li>
+      </ng-container>
+
+      <!-- Menú Paciente -->
+      <ng-container *ngIf="authService.obtenerRolActual() === 'paciente'">
+        <li><a routerLink="/patient/dashboard" routerLinkActive="active">Inicio</a></li>
+        <li><a routerLink="/patient/schedule" routerLinkActive="active">Agendar Cita</a></li>
+        <li><a routerLink="/patient/appointments" routerLinkActive="active">Mis Citas Pendientes</a></li>
+        <li><a routerLink="/patient/history" routerLinkActive="active">Expediente Médico</a></li>
+      </ng-container>
+
+      <!-- Menú Médico -->
+      <ng-container *ngIf="authService.obtenerRolActual() === 'medico'">
+        <li><a routerLink="/doctor/agenda" routerLinkActive="active">Mi Agenda</a></li>
+        <li><a routerLink="/doctor/prescriptions" routerLinkActive="active">Generar Receta</a></li>
+      </ng-container>
+
+      <!-- Menú Recepcionista -->
+      <ng-container *ngIf="authService.obtenerRolActual() === 'recepcionista'">
+        <li><a routerLink="/receptionist/appointments" routerLinkActive="active">Control de Citas</a></li>
+        <li><a routerLink="/receptionist/staff" routerLinkActive="active">Personal Médico</a></li>
+      </ng-container>
+
+      <!-- Botón de Cerrar Sesión común para todos -->
+      <li><button class="logout-btn" (click)="logout()">Cerrar Sesión</button></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <!-- Aquí se inyectan dinámicamente las vistas según la ruta -->
+  <router-outlet></router-outlet>
+</main>

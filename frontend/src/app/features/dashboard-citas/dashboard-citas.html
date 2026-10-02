@@ -1,0 +1,100 @@
+<div class="min-h-screen bg-gray-50 flex flex-col">
+    <!-- Navbar Superior -->
+    <header class="bg-white border-b border-gray-200 px-8 py-4 flex justify-between items-center shadow-xs">
+        <div class="flex items-center space-x-3">
+            <div class="bg-blue-600 text-white font-bold p-2 rounded-lg">HE</div>
+            <span class="text-xl font-extrabold text-blue-900">Hospital ESCOM</span>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span class="text-sm font-medium text-gray-600">Bienvenido, <strong class="text-gray-800">Paciente</strong></span>
+            <button class="text-sm bg-gray-100 hover:bg-red-50 hover:text-red-600 text-gray-700 px-4 py-2 rounded-lg transition-all font-medium cursor-pointer">
+                Cerrar Sesión
+            </button>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="flex-1 max-w-6xl w-full mx-auto p-8">
+
+        <!-- Tarjeta de Bienvenida / Acciones Rápidas -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-blue-600 text-white p-6 rounded-2xl shadow-md flex flex-col justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold opacity-90">Próxima Cita Médica</h2>
+                    <p class="text-2xl font-bold mt-2">12 de Octubre, 10:30 AM</p>
+                    <p class="text-sm opacity-80 mt-1">Dr. Carlos Mendoza (Medicina General)</p>
+                </div>
+                <div class="mt-6 flex space-x-3">
+                    <span class="bg-blue-500 text-xs px-3 py-1 rounded-full font-medium">Confirmada</span>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-gray-500 font-medium text-sm">Estado de Pagos</h3>
+                    <p class="text-xl font-bold text-gray-800 mt-2">Sin pagos pendientes</p>
+                    <p class="text-xs text-gray-400 mt-1">Dispones de 8h tras agendar para abonar</p>
+                </div>
+                <button class="mt-4 text-blue-600 hover:underline text-sm font-bold text-left">Ver comprobantes →</button>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-gray-500 font-medium text-sm">Gestión de Citas</h3>
+                    <p class="text-xl font-bold text-gray-800 mt-2">Agendar Nueva Cita</p>
+                    <p class="text-xs text-gray-400 mt-1">Mínimo 48h de anticipación</p>
+                </div>
+                <button class="mt-4 bg-blue-50 hover:bg-blue-100 text-blue-600 py-2 px-4 rounded-lg font-bold text-sm transition-all cursor-pointer">
+                    + Nueva Cita
+                </button>
+            </div>
+        </div>
+
+        <!-- Historial de Citas -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="font-bold text-gray-800 text-lg">Historial de Citas Médicas</h3>
+                <span class="text-xs text-gray-500 font-medium">Últimos registros</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 text-gray-500 text-xs uppercase font-semibold">
+                            <th class="px-6 py-3">Médico</th>
+                            <th class="px-6 py-3">Especialidad</th>
+                            <th class="px-6 py-3">Fecha y Hora</th>
+                            <th class="px-6 py-3">Estado</th>
+                            <th class="px-6 py-3 text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 text-sm text-gray-700">
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 font-medium">Dra. María Elena Gómez</td>
+                            <td class="px-6 py-4 text-gray-500">Cardiología</td>
+                            <td class="px-6 py-4">01 Sep 2026, 04:00 PM</td>
+                            <td class="px-6 py-4">
+                                <span class="bg-green-100 text-green-700 text-xs px-2.5 py-1 rounded-full font-medium">Atendida</span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <button class="text-blue-600 hover:underline font-medium">Ver Receta</button>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 font-medium">Dr. Carlos Mendoza</td>
+                            <td class="px-6 py-4 text-gray-500">Medicina General</td>
+                            <td class="px-6 py-4">15 Ago 2026, 11:00 AM</td>
+                            <td class="px-6 py-4">
+                                <span class="bg-red-100 text-red-700 text-xs px-2.5 py-1 rounded-full font-medium">Cancelada</span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <span class="text-gray-400 font-medium">Reembolso 50%</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>

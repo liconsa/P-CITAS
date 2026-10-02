@@ -1,0 +1,127 @@
+<div class="admin-layout">
+  <!-- MENÚ LATERAL PRINCIPAL -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>Panel Admin</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <button type="button" (click)="cambiarPestana('roles')" [class.active]="pestanaActiva === 'roles'">Gestión de Recepcionistas</button>
+    </nav>
+    <div class="sidebar-footer">
+      <button type="button" class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+  </aside>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="content">
+
+    <!-- SECCIÓN: GESTIÓN DE RECEPCIONISTAS -->
+    <div *ngIf="pestanaActiva === 'roles'" class="roles-section">
+      <div class="header-action-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <div>
+          <h2>Gestión y Permisos de Recepcionistas</h2>
+          <p class="subtitle" style="margin: 0;">Administra el personal, áreas (Citas o Farmacia) y sus accesos.</p>
+        </div>
+        <button type="button" class="btn-primary" (click)="abrirModalCrear()" style="padding: 10px 15px; background: #0f172a; color: white; border: none; border-radius: 6px; cursor: pointer;">
+          + Registrar Nueva Recepcionista
+        </button>
+      </div>
+
+      <div class="split-container">
+
+        <!-- COLUMNA IZQUIERDA: BUSCADOR Y LISTA (SOLO RECEPCIONISTAS) -->
+        <div class="left-pane">
+          <h3>Recepcionistas Registradas</h3>
+
+          <div class="filter-search-box">
+            <input type="text" [(ngModel)]="filtroNombre" placeholder="Buscar por nombre..." class="search-input" style="width: 100%;">
+          </div>
+
+          <div class="list-group">
+            <button type="button" *ngFor="let usuario of usuariosFiltradosPorRecepcionista"
+                    (click)="seleccionarUsuario(usuario)"
+                    [class.selected]="usuarioSeleccionado?.id === usuario.id">
+              <span class="name">{{ usuario.nombre }}</span>
+              <span class="role-badge">{{ usuario.rol }}</span>
+            </button>
+            <div *ngIf="usuariosFiltradosPorRecepcionista.length === 0" class="no-results">
+              No se encontraron recepcionistas registradas.
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: PERMISOS, ÁREA, BOTÓN BORRAR Y VALIDACIÓN 2FA -->
+        <div class="right-pane">
+          <div *ngIf="!usuarioSeleccionado" class="placeholder-message">
+            Selecciona una recepcionista de la lista izquierda para ver y modificar sus permisos y área.
+          </div>
+
+          <div *ngIf="usuarioSeleccionado">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h3>Configuración de: {{ usuarioSeleccionado.nombre }}</h3>
+              <button type="button" class="btn-delete" (click)="eliminarRecepcionista(usuarioSeleccionado)" style="background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+                Eliminar Recepcionista
+              </button>
+            </div>
+            <p class="pane-sub">Modifica los accesos y guarda con tu código de seguridad temporal.</p>
+
+            <table class="permissions-table">
+              <thead>
+                <tr>
+                  <th>Módulo / Módulo de Acción</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let permiso of usuarioSeleccionado.permisos">
+                  <td>{{ permiso.nombre }}</td>
+                  <td>
+                    <input type="checkbox" [(ngModel)]="permiso.activo">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- SECCIÓN DE ASIGNACIÓN DE ÁREA (SOLO CITAS Y FARMACIA) -->
+            <div class="area-assignment-box" style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+              <h4 style="margin-top: 0; color: #1e293b; font-size: 14px;">Área o Departamento Asignado</h4>
+              <p class="pane-sub" style="font-size: 12px; color: #64748b; margin-bottom: 8px;">Selecciona el departamento operativo:</p>
+              <select [(ngModel)]="usuarioSeleccionado.area" class="role-select" style="width: 100%; padding: 8px;">
+                <option value="Citas">Citas</option>
+                <option value="Farmacia">Farmacia</option>
+              </select>
+            </div>
+
+            <!-- CAJA DE SEGURIDAD CON ENVÍO DE LLAVE TEMPORAL -->
+            <div class="security-box" style="margin-top: 20px;">
+              <h4>Verificación de Seguridad (2FA)</h4>
+
+              <div *ngIf="!llaveEnviada" class="step-request">
+                <p>Para aplicar estos cambios, el sistema debe generar una clave temporal y enviarla al correo del administrador.</p>
+                <button type="button" class="btn-secondary" (click)="solicitarLlaveTemporal()">
+                  Enviar Clave Temporal al Correo
+                </button>
+              </div>
+
+              <div *ngIf="llaveEnviada" class="step-verify">
+                <p class="success-text">¡Clave temporal enviada! Revisa tu bandeja de entrada e ingrésala abajo:</p>
+
+                <input type="text"
+                       [(ngModel)]="claveIngresada"
+                       (input)="claveIngresada = $any($event.target).value"
+                       placeholder="Ej. 2548"
+                       class="code-input">
+
+                <button type="button" class="btn-save" (click)="guardarPermisosConVerificacion()">
+                  Confirmar y Guardar Cambios
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>

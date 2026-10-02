@@ -1,0 +1,232 @@
+/* Ocultar scrollbars globales para mantener la vista estática */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden !important;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.login-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  overflow: hidden;
+  box-sizing: border-box;
+
+  .login-card {
+    display: flex;
+    width: 100%;
+    max-width: 48rem;
+    max-height: 85vh;
+    height: 31rem;
+    background: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    border: 1px solid #cbd5e1;
+
+    // Lado izquierdo (Formulario)
+    .form-section {
+      flex: 1;
+      padding: 2rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+
+      h2 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 0.15rem;
+      }
+
+      .subtitle {
+        font-size: 0.78rem;
+        color: #64748b;
+        margin-bottom: 1.25rem;
+        font-weight: 500;
+      }
+
+      .form-group {
+        margin-bottom: 0.8rem;
+
+        label {
+          display: block;
+          font-size: 0.68rem;
+          font-weight: 700;
+          color: #334155;
+          letter-spacing: 0.04em;
+          margin-bottom: 0.25rem;
+        }
+
+        input {
+          width: 100%;
+          padding: 0.55rem 0.75rem;
+          border: 1px solid #cbd5e1;
+          border-radius: 0.5rem;
+          font-size: 0.813rem;
+          outline: none;
+          transition: all 0.2s ease;
+          background-color: #f8fafc;
+          color: #0f172a;
+          box-sizing: border-box;
+
+          &:focus {
+            border-color: #2563eb;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+          }
+        }
+      }
+
+      .actions-row {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 0.8rem;
+
+        .link-muted {
+          font-size: 0.75rem;
+          color: #64748b;
+          cursor: pointer;
+          text-decoration: none;
+          font-weight: 500;
+
+          &:hover {
+            color: #2563eb;
+            text-decoration: underline;
+          }
+        }
+      }
+
+      .error-msg {
+        background-color: #fef2f2;
+        color: #dc2626;
+        padding: 0.4rem;
+        border-radius: 0.4rem;
+        font-size: 0.75rem;
+        margin-bottom: 0.5rem;
+        border-left: 3px solid #dc2626;
+      }
+
+      .success-msg {
+        background-color: #f0fdf4;
+        color: #16a34a;
+        padding: 0.4rem;
+        border-radius: 0.4rem;
+        font-size: 0.75rem;
+        margin-bottom: 0.5rem;
+        border-left: 3px solid #16a34a;
+      }
+
+      // Botón expandido al 100% y centrado en armonía con los inputs
+      .btn-entrar {
+        width: 100%;
+        display: block;
+        box-sizing: border-box;
+        background-color: #2563eb;
+        color: #ffffff;
+        font-weight: 700;
+        padding: 0.65rem;
+        border-radius: 0.5rem;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+        font-size: 0.85rem;
+        text-align: center;
+        margin-top: 0.5rem;
+
+        &:hover {
+          background-color: #1d4ed8;
+        }
+
+        &:active {
+          transform: scale(0.99);
+        }
+      }
+
+      .footer-link {
+        margin-top: 0.8rem;
+        text-align: center;
+        font-size: 0.78rem;
+        color: #64748b;
+
+        span {
+          color: #64748b;
+        }
+
+        a {
+          color: #2563eb;
+          font-weight: 700;
+          cursor: pointer;
+          text-decoration: none;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+
+        &.center {
+          text-align: center;
+        }
+      }
+    }
+
+    // Lado derecho (Panel lateral institucional limpio)
+    .image-section {
+      flex: 1;
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      color: #ffffff;
+      text-align: center;
+
+      @media (max-width: 768px) {
+        display: none;
+      }
+
+      .illustration-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .medical-icon-pulse {
+          width: 56px;
+          height: 56px;
+          background: rgba(255, 255, 255, 0.12);
+          border-radius: 50%;
+          margin-bottom: 1rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 2px dashed rgba(255, 255, 255, 0.4);
+        }
+
+        h3 {
+          font-size: 1.5rem;
+          font-weight: 800;
+          margin-bottom: 0.25rem;
+          letter-spacing: -0.025em;
+        }
+
+        p {
+          font-size: 0.85rem;
+          opacity: 0.85;
+          font-weight: 400;
+        }
+      }
+    }
+  }
+}

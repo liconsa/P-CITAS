@@ -1,0 +1,140 @@
+<div class="login-page">
+  <div class="login-card">
+
+    <!-- LADO IZQUIERDO: FORMULARIO DINÁMICO -->
+    <div class="form-section">
+
+      <!-- VISTA 1: INICIO DE SESIÓN -->
+      <div *ngIf="vista === 'login'">
+        <h2>Bienvenidos</h2>
+        <p class="subtitle">Hospital ESCOM - Sistema de Citas</p>
+
+        <div>
+          <div class="form-group">
+            <label for="correo">CORREO ELECTRÓNICO</label>
+            <input type="email" id="correo" [(ngModel)]="correo" name="correo" placeholder="admin@hospital.com">
+          </div>
+
+          <div class="form-group">
+            <label for="contrasena">CONTRASEÑA</label>
+            <input type="password" id="contrasena" [(ngModel)]="contrasena" name="contrasena" placeholder="••••••••">
+          </div>
+
+          <div class="actions-row">
+            <a class="link-muted" (click)="cambiarVista('recuperar')">¿Olvidaste tu contraseña?</a>
+          </div>
+
+          <div class="error-msg" *ngIf="mensajeError">{{ mensajeError }}</div>
+          <div class="success-msg" *ngIf="mensajeExito">{{ mensajeExito }}</div>
+
+          <button type="button" class="btn-entrar" (click)="entrar($event)">INICIAR SESIÓN</button>
+
+          <div class="footer-link">
+            <span>¿No tienes cuenta? </span>
+            <a (click)="cambiarVista('registro')">Regístrate</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISTA 2: REGISTRO -->
+      <div *ngIf="vista === 'registro'">
+        <h2>Registro</h2>
+        <p class="subtitle">Crea una nueva cuenta de paciente</p>
+
+        <div>
+          <div class="form-group">
+            <label for="nombre">NOMBRE COMPLETO</label>
+            <input type="text" id="nombre" [(ngModel)]="nombre" name="nombre" placeholder="Diego Licona">
+          </div>
+
+          <div class="form-group">
+            <label for="correoReg">CORREO ELECTRÓNICO</label>
+            <input type="email" id="correoReg" [(ngModel)]="correo" name="correoReg" placeholder="correo@hospital.com">
+          </div>
+
+          <div class="form-group">
+            <label for="contrasenaReg">CONTRASEÑA</label>
+            <input type="password" id="contrasenaReg" [(ngModel)]="contrasena" name="contrasenaReg" placeholder="••••••••">
+          </div>
+
+          <div class="error-msg" *ngIf="mensajeError">{{ mensajeError }}</div>
+          <div class="success-msg" *ngIf="mensajeExito">{{ mensajeExito }}</div>
+
+          <button type="button" class="btn-entrar" (click)="registrarUsuario($event)">REGISTRARSE</button>
+
+          <div class="footer-link center">
+            <a (click)="cambiarVista('login')">← Volver al Login</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISTA 3: RECUPERAR CONTRASEÑA -->
+      <div *ngIf="vista === 'recuperar'">
+        <h2>Recuperar Cuenta</h2>
+        <p class="subtitle">Ingresa tu correo para recibir un código</p>
+
+        <div>
+          <div class="form-group">
+            <label for="correoRec">CORREO ELECTRÓNICO</label>
+            <input type="email" id="correoRec" [(ngModel)]="correo" name="correoRec" placeholder="correo@hospital.com">
+          </div>
+
+          <div class="error-msg" *ngIf="mensajeError">{{ mensajeError }}</div>
+          <div class="success-msg" *ngIf="mensajeExito">{{ mensajeExito }}</div>
+
+          <button type="button" class="btn-entrar" (click)="solicitarRecuperacion($event)">ENVIAR CÓDIGO</button>
+
+          <div class="footer-link center">
+            <a (click)="cambiarVista('login')">← Volver al Login</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISTA 4: VERIFICAR CÓDIGO -->
+      <div *ngIf="vista === 'codigo'">
+        <h2>Verificación</h2>
+        <p class="subtitle">Introduce el código de 4 dígitos</p>
+
+        <div>
+          <div class="form-group">
+            <label for="codigo">CÓDIGO</label>
+            <input type="text" id="codigo" [(ngModel)]="codigoIngresado" name="codigo" maxlength="4" placeholder="1234">
+          </div>
+
+          <div class="error-msg" *ngIf="mensajeError">{{ mensajeError }}</div>
+
+          <button type="button" class="btn-entrar" (click)="verificarCodigo($event)">VERIFICAR CÓDIGO</button>
+        </div>
+      </div>
+
+      <!-- VISTA 5: NUEVA CONTRASEÑA -->
+      <div *ngIf="vista === 'nueva-pass'">
+        <h2>Nueva Contraseña</h2>
+        <p class="subtitle">Escribe tu nueva clave de acceso</p>
+
+        <div>
+          <div class="form-group">
+            <label for="nuevaPass">NUEVA CONTRASEÑA</label>
+            <input type="password" id="nuevaPass" [(ngModel)]="nuevaContrasena" name="nuevaPass" placeholder="••••••••">
+          </div>
+
+          <div class="error-msg" *ngIf="mensajeError">{{ mensajeError }}</div>
+          <div class="success-msg" *ngIf="mensajeExito">{{ mensajeExito }}</div>
+
+          <button type="button" class="btn-entrar" (click)="guardarNuevaContrasena($event)">ACTUALIZAR CONTRASEÑA</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- LADO DERECHO: PANEL GRÁFICO / ILUSTRACIÓN -->
+    <div class="image-section">
+      <div class="illustration-content">
+        <div class="medical-icon-pulse"></div>
+        <h3>Hospital ESCOM</h3>
+        <p>Excelencia en tecnología y salud</p>
+      </div>
+    </div>
+
+  </div>
+</div>

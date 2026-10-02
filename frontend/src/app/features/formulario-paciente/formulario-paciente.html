@@ -1,0 +1,61 @@
+<div class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-xl border border-gray-100">
+
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold text-blue-600 tracking-tight">Hospital ESCOM</h1>
+            <p class="text-gray-500 text-sm mt-1 font-medium">Registro de Nuevo Paciente</p>
+        </div>
+
+        <form class="space-y-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Nombre(s)</label>
+                    <input class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
+                           type="text" placeholder="Ej. Diego" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Apellidos</label>
+                    <input class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
+                           type="text" placeholder="Ej. Licona Garcés" required>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2">Correo Electrónico</label>
+                <input class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
+                       type="email" placeholder="correo@ejemplo.com" required>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Teléfono</label>
+                    <input class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
+                           type="tel" placeholder="55 1234 5678" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Fecha de Nacimiento</label>
+                    <input class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
+                           type="date" required>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2">Contraseña</label>
+                <input class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
+                       type="password" placeholder="••••••••" required>
+            </div>
+
+            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer mt-2" type="submit">
+                Crear Cuenta de Paciente
+            </button>
+        </form>
+
+        <div class="border-t border-gray-100 mt-6 pt-4 text-center">
+            <p class="text-sm text-gray-500">
+                ¿Ya tienes una cuenta?
+                <a routerLink="/login" class="text-blue-600 font-bold hover:underline">Inicia sesión aquí</a>
+            </p>
+        </div>
+
+    </div>
+</div>
