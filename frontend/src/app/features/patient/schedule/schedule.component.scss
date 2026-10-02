@@ -57,7 +57,7 @@ $input-bg: #f8fafc;
   margin-bottom: 1.5rem;
 }
 
-// COMPONENTES DEL FORMULARIO (Igual al anterior pero adaptado)
+// COMPONENTES DEL FORMULARIO
 .card-header {
   text-align: center;
   margin-bottom: 2.5rem;
@@ -87,7 +87,6 @@ $input-bg: #f8fafc;
       &:focus { border-color: $primary-light; background-color: $white; box-shadow: 0 0 0 4px rgba($primary-light, 0.15); outline: none; }
     }
 
-    // Campo de fecha bloqueado visualmente
     &.date-display input {
       background-color: #f1f5f9;
       color: $text-muted;
@@ -125,30 +124,71 @@ $input-bg: #f8fafc;
   &.error { background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
 }
 
-// CALENDARIO SAT (Mismo diseño de antes, ajustado al panel)
+// CALENDARIO INSTITUCIONAL (ESTADOS DINÁMICOS)
 .sat-calendar {
   border: 1px solid $border-color; border-radius: 12px; padding: 1rem; background: $white; margin-top: 0.5rem;
+
   .calendar-header {
     display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;
     h4 { margin: 0; color: $primary; font-size: 1.2rem; text-transform: capitalize; }
     button { background: none; border: none; font-size: 1.2rem; color: $primary-light; cursor: pointer; padding: 0.5rem; border-radius: 50%; transition: background 0.2s; &:hover { background: rgba($primary, 0.1); } }
   }
+
   .calendar-grid {
     display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center;
     &.weekdays { font-weight: bold; color: $text-muted; font-size: 0.85rem; margin-bottom: 0.5rem; }
+
     &.days .day-box {
       padding: 0.6rem 0; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 2px solid transparent;
-      &.empty { background: transparent; cursor: default; }
-      &.available { background: #e8f5e9; color: #2e7d32; &:hover { background: #c8e6c9; transform: scale(1.05); } }
-      &.full { background: #ffebee; color: #c62828; cursor: not-allowed; opacity: 0.8; }
-      &.disabled { background: #f1f5f9; color: #cbd5e1; cursor: not-allowed; }
-      &.selected { background: $primary; color: $white; border-color: darken($primary, 10%); transform: scale(1.1); box-shadow: 0 4px 10px rgba($primary, 0.3); }
+
+      &.empty { background: transparent !important; border: none !important; cursor: default; }
+
+      // ⚪ INHÁBIL / PASADO
+      &.disabled { background-color: #f1f5f9 !important; color: #cbd5e1 !important; border-color: #e2e8f0 !important; cursor: not-allowed; }
+
+      // 🟢 VERDE (Disponible por defecto)
+      &.estado-disponible {
+        background-color: #dcfce7 !important;
+        border-color: #22c55e !important;
+        color: #166534 !important;
+        &:hover { background-color: #bbf7d0 !important; transform: scale(1.05); }
+      }
+
+      // 🟡 AMARILLO (Parcial: tiene algunas citas agendadas)
+      &.estado-parcial {
+        background-color: #fef9c3 !important;
+        border-color: #eab308 !important;
+        color: #854d0e !important;
+        &:hover { background-color: #fef08a !important; transform: scale(1.05); }
+      }
+
+      // 🔴 ROJO (Lleno: se agotaron los 6 cupos)
+      &.estado-lleno {
+        background-color: #fee2e2 !important;
+        border-color: #ef4444 !important;
+        color: #991b1b !important;
+        cursor: not-allowed;
+      }
+
+      // 🔵 SELECCIONADO
+      &.selected {
+        background-color: $primary !important;
+        color: $white !important;
+        border-color: darken($primary, 10%) !important;
+        transform: scale(1.1);
+        box-shadow: 0 4px 10px rgba($primary, 0.3);
+        z-index: 2;
+      }
     }
   }
+
   .calendar-legend {
-    display: flex; justify-content: center; gap: 15px; margin-top: 1.5rem; font-size: 0.85rem; color: $text-muted;
-    .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 4px;
-      &.available { background: #4caf50; } &.full { background: #f44336; } &.disabled { background: #cbd5e1; }
+    display: flex; justify-content: center; gap: 12px; margin-top: 1.5rem; font-size: 0.8rem; color: $text-muted; flex-wrap: wrap;
+    .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px;
+      &.available { background: #22c55e; }
+      &.partial   { background: #eab308; }
+      &.full      { background: #ef4444; }
+      &.disabled  { background: #cbd5e1; }
     }
   }
 }
@@ -170,3 +210,9 @@ $input-bg: #f8fafc;
 
 .slide-in { animation: slideUpFade 0.3s ease-out; }
 @keyframes slideUpFade { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+.alert {
+  padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; text-align: center; font-weight: 600;
+  &.success { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+  &.error { background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+  &.warning { background-color: #fef9c3; color: #854d0e; border: 1px solid #fde047; } // 👈 Estilo para la advertencia
+}

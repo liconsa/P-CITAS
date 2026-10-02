@@ -21,7 +21,7 @@ services:
     environment:
       - SQLALCHEMY_DATABASE_URI=postgresql://postgres:postgrespassword@postgres:5432/hospital_db
     # Ejecuta el script de datos masivos antes de iniciar Flask
-    command: sh -c "python seed.py && python app.py"
+    command: sh -c "python seed.py && python main.py"
     depends_on:
       - postgres
 

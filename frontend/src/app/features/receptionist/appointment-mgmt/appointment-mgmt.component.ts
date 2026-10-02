@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../../core/services/api.service';
 
@@ -6,33 +6,64 @@ import { ApiService } from '../../../core/services/api.service';
   selector: 'app-appointment-mgmt',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './appointment-mgmt.component.html'
+  templateUrl: './appointment-mgmt.component.html',
+  styleUrl: 'appointment-mgmt.component.scss'
 })
 export class AppointmentMgmtComponent implements OnInit {
   citas: any[] = [];
   mensaje: string = '';
+  cargando: boolean = false;
 
-  constructor(private api: ApiService) {}
+  constructor(
+    private api: ApiService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
-    this.cargarTodasLasCitas();
+    this.cargarCitas();
   }
 
-  cargarTodasLasCitas() {
-    // Se asume un endpoint general para que recepción vea las citas
-    this.api.get<any[]>('admin/citas').subscribe(
-      res => this.citas = res
-    );
-  }
-
-  cambiarEstadoCita(id: number, nuevoEstado: string) {
-    // El recepcionista podrá intervenir en el proceso de confirmación o cancelación de citas.
-    this.api.put(`receptionist/citas/${id}/estado?nuevo_estado=${nuevoEstado}`, {}).subscribe({
-      next: () => {
-        this.mensaje = `Cita ${nuevoEstado.toLowerCase()} exitosamente.`;
-        this.cargarTodasLasCitas();
+  cargarCitas() {
+    this.cargando = true;
+    this.api.get('receptionist/appointments-all').subscribe({
+      next: (data: any) => {
+        this.citas = data || [];
+        this.cargando = false;
+        this.cdr.detectChanges();
       },
-      error: () => this.mensaje = 'Error al actualizar el estado de la cita.'
+      error: (err) => {
+        console.error('Error al cargar citas:', err);
+        this.cargando = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  confirmarCita(citaId: number) {
+    this.api.post(`receptionist/appointments/${citaId}/confirmar`, {}).subscribe({
+      next: () => {
+        this.mensaje = '✅ Cita confirmada exitosamente.';
+        this.cargarCitas();
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.mensaje = '❌ Error al confirmar la cita.';
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  cancelarCita(citaId: number) {
+    this.api.post(`receptionist/appointments/${citaId}/cancelar`, {}).subscribe({
+      next: () => {
+        this.mensaje = '✅ Cita cancelada correctamente.';
+        this.cargarCitas();
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.mensaje = '❌ Error al cancelar la cita.';
+        this.cdr.detectChanges();
+      }
     });
   }
 }

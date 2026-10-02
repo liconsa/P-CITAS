@@ -185,19 +185,20 @@
       <div class="summary-title">📄 Cédula de Registro del Expediente Clínico</div>
 
       <div class="summary-box-grid">
-        <div class="sum-item"><strong>Paciente:</strong> {{ historialForm.value.apellido_paterno }} {{ historialForm.value.apellido_materno }} {{ historialForm.value.nombres }}</div>
-        <div class="sum-item"><strong>CURP:</strong> {{ historialForm.value.curp }}</div>
-        <div class="sum-item"><strong>Nacimiento:</strong> {{ historialForm.value.fecha_nacimiento }} ({{ historialForm.value.edad }})</div>
-        <div class="sum-item"><strong>Género / Origen:</strong> {{ historialForm.value.genero }} / {{ historialForm.value.lugar_nacimiento }}</div>
-        <div class="sum-item"><strong>Teléfono:</strong> {{ historialForm.value.telefono }}</div>
-        <div class="sum-item full"><strong>Domicilio:</strong> {{ historialForm.value.calle_numero }}, Col. {{ historialForm.value.colonia }}, C.P. {{ historialForm.value.codigo_postal }}, {{ historialForm.value.municipio }}.</div>
-        <div class="sum-item"><strong>Grupo Sanguíneo:</strong> {{ historialForm.value.blood_type }}</div>
-        <div class="sum-item"><strong>Diabetes (Fam):</strong> {{ historialForm.value.ant_diabetes || 'No especificado' }}</div>
-        <div class="sum-item"><strong>Hipertensión (Fam):</strong> {{ historialForm.value.ant_hipertension || 'No especificado' }}</div>
-        <div class="sum-item"><strong>Alergias:</strong> {{ historialForm.value.alergias_otro || 'Ninguna' }}</div>
-        <div class="sum-item full" *ngIf="esMedico || historialForm.value.diagnosticos_medicos">
+        <div class="sum-item"><strong>Paciente:</strong> {{ historialForm.get('apellido_paterno')?.value }} {{ historialForm.get('apellido_materno')?.value }} {{ historialForm.get('nombres')?.value }}</div>
+        <div class="sum-item"><strong>CURP:</strong> {{ historialForm.get('curp')?.value }}</div>
+        <div class="sum-item"><strong>Nacimiento:</strong> {{ historialForm.get('fecha_nacimiento')?.value }}</div>
+        <div class="sum-item"><strong>Edad:</strong>{{ historialForm.get('edad')?.value }}</div>
+        <div class="sum-item"><strong>Género / Origen:</strong> {{ historialForm.get('genero')?.value }} / {{ historialForm.get('lugar_nacimiento')?.value }}</div>
+        <div class="sum-item"><strong>Teléfono:</strong> {{ historialForm.get('telefono')?.value }}</div>
+        <div class="sum-item full"><strong>Domicilio:</strong> {{ historialForm.get('calle_numero')?.value }}, Col. {{ historialForm.get('colonia')?.value }}, C.P. {{ historialForm.get('codigo_postal')?.value }}, {{ historialForm.get('municipio')?.value }}.</div>
+        <div class="sum-item"><strong>Grupo Sanguíneo:</strong> {{ historialForm.get('blood_type')?.value }}</div>
+        <div class="sum-item"><strong>Diabetes (Fam):</strong> {{ historialForm.get('ant_diabetes')?.value || 'No especificado' }}</div>
+        <div class="sum-item"><strong>Hipertensión (Fam):</strong> {{ historialForm.get('ant_hipertension')?.value || 'No especificado' }}</div>
+        <div class="sum-item"><strong>Alergias:</strong> {{ historialForm.get('alergias_otro')?.value || 'Ninguna' }}</div>
+        <div class="sum-item full" *ngIf="esMedico || historialForm.get('diagnosticos_medicos')?.value">
           <strong>Diagnóstico / Padecimiento Actual (Médico):</strong>
-          <span class="clinical-text">{{ historialForm.value.diagnosticos_medicos || 'Pendiente de valoración médica' }}</span>
+          <span class="clinical-text">{{ historialForm.get('diagnosticos_medicos')?.value || 'Pendiente de valoración médica' }}</span>
         </div>
       </div>
 

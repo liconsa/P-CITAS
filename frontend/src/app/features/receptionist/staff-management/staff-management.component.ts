@@ -1,38 +1,97 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from '../../../core/services/api.service';
 
 @Component({
   selector: 'app-staff-management',
   standalone: true,
-  imports: [CommonModule],
-  templateUrl: './staff-management.component.html'
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './staff-management.component.html',
+  styleUrls: ['./staff-management.component.scss']
 })
 export class StaffManagementComponent implements OnInit {
-  doctores: any[] = [];
+  // Propiedad declarada para evitar el error de TypeScript
+  medicoForm!: FormGroup;
+  medicos: any[] = [];
   mensaje: string = '';
+  cargando: boolean = false;
 
-  constructor(private api: ApiService) {}
+  constructor(
+    private fb: FormBuilder,
+    private api: ApiService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
-    this.cargarDoctores();
+    // Inicialización del formulario reactivo
+    this.medicoForm = this.fb.group({
+      nombre: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
+      especialidad: ['', Validators.required]
+    });
+
+    this.cargarMedicos();
   }
 
-  cargarDoctores() {
-    this.api.get<any[]>('admin/usuarios?rol=medico').subscribe(
-      res => this.doctores = res.filter(user => user.rol === 'medico')
-    );
-  }
-
-  cambiarEstado(id: number, estadoActual: boolean) {
-    const nuevoEstado = !estadoActual;
-    // El recepcionista podrá realizar operaciones de alta y baja del personal médico.[cite: 1]
-    this.api.put(`receptionist/doctores/${id}/estado?activo=${nuevoEstado}`, {}).subscribe({
-      next: () => {
-        this.mensaje = `Estado del médico actualizado correctamente.`;
-        this.cargarDoctores(); // Refrescar la tabla
+  cargarMedicos() {
+    this.cargando = true;
+    this.api.get('receptionist/doctors-admin').subscribe({
+      next: (data: any) => {
+        this.medicos = data || [];
+        this.cargando = false;
+        this.cdr.detectChanges();
       },
-      error: () => this.mensaje = 'Ocurrió un error al actualizar el estado.'
+      error: (err) => {
+        console.error('Error al cargar médicos:', err);
+        this.cargando = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  registrarMedico() {
+    if (this.medicoForm.invalid) {
+      this.mensaje = '❌ Por favor llena todos los campos obligatorios.';
+      return;
+    }
+
+    const datosFormulario = this.medicoForm.value;
+
+    this.api.post('receptionist/doctors-register', datosFormulario).subscribe({
+      next: (response: any) => {
+        this.mensaje = '✅ Médico registrado con éxito.';
+
+        // Agregamos el médico recién creado directamente a la tabla al instante
+        this.medicos.push({
+          id: response.id || Date.now(),
+          nombre: datosFormulario.nombre,
+          email: datosFormulario.email,
+          especialidad: datosFormulario.especialidad,
+          activo: true
+        });
+
+        this.medicoForm.reset({ especialidad: '' }); // Limpia el formulario y resetea el select
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al registrar:', err);
+        this.mensaje = '❌ Error al registrar el médico.';
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  cambiarEstado(medicoId: number) {
+    this.api.post(`receptionist/doctors/${medicoId}/toggle-status`, {}).subscribe({
+      next: () => {
+        this.cargarMedicos();
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        console.error('Error al cambiar estado del médico');
+      }
     });
   }
 }

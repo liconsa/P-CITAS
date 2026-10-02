@@ -1,29 +1,47 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.database import get_db
+from app.models.user import User
 from app.models.appointment import Appointment
 
 router = APIRouter(prefix="/doctor", tags=["Médico"])
 
-@router.get("/agenda")
-def consultar_agenda(medico_id: int = 2, db: Session = Depends(get_db)): # medico_id provendría del token JWT
-    # El médico podrá visualizar sus citas programadas.[cite: 1]
-    citas = db.query(Appointment).filter(
-        Appointment.medico_id == medico_id,
-        Appointment.estado == "PENDIENTE"
-    ).order_by(Appointment.fecha_hora).all()
-    return citas
 
-@router.get("/pacientes/{paciente_id}/historial")
-def consultar_historial_medico(paciente_id: int, db: Session = Depends(get_db)):
-    # El médico podrá consultar el historial médico correspondiente a sus pacientes.[cite: 1]
-    historial = db.query(Appointment).filter(Appointment.paciente_id == paciente_id).all()
-    return {"paciente_id": paciente_id, "historial": historial}
+# ==========================================
+# 1. VER CITAS ASIGNADAS AL MÉDICO
+# ==========================================
+@router.get("/{medico_id}/appointments")
+def listar_mis_citas(medico_id: int, db: Session = Depends(get_db)):
+    # Filtramos estrictamente por el ID del médico en sesión
+    citas = db.query(Appointment).filter(Appointment.medico_id == medico_id).all()
 
-# Aquí se integraría la ruta para generar recetas:
-# El médico podrá generar recetas relacionadas con los pacientes atendidos.[cite: 1]
-@router.post("/recetas")
-def registrar_receta_medica():
-    # La implementación utilizaría un esquema funcional para procesar medicamentos
-    # como se define en el paradigma funcional mediante MAP.[cite: 1]
-    return {"mensaje": "Receta generada en desarrollo."}
+    resultado = []
+    for c in citas:
+        # Buscamos los datos del paciente para mostrarlos en la tabla
+        paciente = db.query(User).filter(User.id == c.paciente_id).first()
+
+        resultado.append({
+            "id": c.id,
+            "paciente_nombre": paciente.nombre if paciente else f"Paciente #{c.paciente_id}",
+            "fecha_hora": c.fecha_hora,
+            "estado": c.estado
+        })
+
+    return resultado
+
+
+# ==========================================
+# 2. FINALIZAR / COMPLETAR CITA
+# ==========================================
+@router.post("/appointments/{cita_id}/complete")
+def finalizar_cita(cita_id: int, db: Session = Depends(get_db)):
+    cita = db.query(Appointment).filter(Appointment.id == cita_id).first()
+
+    if not cita:
+        raise HTTPException(status_code=404, detail="Cita no encontrada")
+
+    # Cambiamos el estado para indicar que la consulta terminó
+    cita.estado = "COMPLETADA"
+    db.commit()
+
+    return {"mensaje": "Consulta finalizada exitosamente"}

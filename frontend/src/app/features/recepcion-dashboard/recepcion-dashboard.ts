@@ -1,12 +1,20 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { StaffManagementComponent } from '../receptionist/staff-management/staff-management.component';
+import { AppointmentMgmtComponent } from '../receptionist/appointment-mgmt/appointment-mgmt.component';
 
 @Component({
   selector: 'app-recepcion-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, StaffManagementComponent, AppointmentMgmtComponent],
   templateUrl: './recepcion-dashboard.html',
-  styleUrls: ['./recepcion-dashboard.scss']
+  styleUrl: './recepcion-dashboard.scss'
 })
-export class RecepcionDashboardComponent {}
+export class RecepcionDashboardComponent {
+  // Pestaña activa por defecto: 'citas' o 'medicos'
+  vistaActiva: 'citas' | 'medicos' = 'citas';
+
+  cambiarVista(vista: 'citas' | 'medicos') {
+    this.vistaActiva = vista;
+  }
+}

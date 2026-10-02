@@ -1,30 +1,57 @@
 <div class="appointment-mgmt-container">
-  <h2>Gestión de Citas (Recepción)</h2>
-  <p *ngIf="mensaje" class="alert">{{ mensaje }}</p>
+  <h2>📅 Control General de Citas (Recepción)</h2>
 
-  <table>
-    <thead>
-      <tr>
-        <th>ID Cita</th>
-        <th>Fecha y Hora</th>
-        <th>ID Paciente</th>
-        <th>ID Médico</th>
-        <th>Estado Actual</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let cita of citas">
-        <td>{{ cita.id }}</td>
-        <td>{{ cita.fecha_hora | date:'short' }}</td>
-        <td>{{ cita.paciente_id }}</td>
-        <td>{{ cita.medico_id }}</td>
-        <td>{{ cita.estado }}</td>
-        <td>
-          <button *ngIf="cita.estado === 'PENDIENTE'" (click)="cambiarEstadoCita(cita.id, 'CONFIRMADA')">Confirmar</button>
-          <button *ngIf="cita.estado === 'PENDIENTE'" (click)="cambiarEstadoCita(cita.id, 'CANCELADA')">Cancelar</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <!-- Alertas del sistema -->
+  <div *ngIf="mensaje" class="alert" [ngClass]="{'success': mensaje.includes('✅'), 'error': mensaje.includes('❌')}">
+    {{ mensaje }}
+  </div>
+
+  <div class="table-responsive">
+    <table class="appointment-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Paciente</th>
+          <th>Médico</th>
+          <th>Fecha y Hora</th>
+          <th>Precio</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of citas">
+          <td>#{{ c.id }}</td>
+          <td>{{ c.paciente_nombre }}</td>
+          <td>Dr(a). {{ c.medico_nombre }}</td>
+          <td>{{ c.fecha_hora | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td>${{ c.precio | number:'1.2-2' }}</td>
+          <td>
+            <span class="badge" [ngClass]="{
+              'pendiente': c.estado === 'PENDIENTE',
+              'confirmada': c.estado === 'CONFIRMADA',
+              'cancelada': c.estado === 'CANCELADA'
+            }">
+              {{ c.estado }}
+            </span>
+          </td>
+          <td class="actions-cell">
+            <button type="button" class="btn-confirm"
+                    *ngIf="c.estado === 'PENDIENTE'"
+                    (click)="confirmarCita(c.id)">
+              Confirmar ✔️️
+            </button>
+            <button type="button" class="btn-cancel"
+                    *ngIf="c.estado !== 'CANCELADA'"
+                    (click)="cancelarCita(c.id)">
+              Cancelar ✖️
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="citas.length === 0">
+          <td colspan="7" class="empty-row">No hay citas registradas en el sistema.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

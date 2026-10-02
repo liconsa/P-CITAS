@@ -1,27 +1,86 @@
 <div class="staff-container">
-  <h2>Gestión de Personal Médico</h2>
-  <p *ngIf="mensaje" class="alert">{{ mensaje }}</p>
+  <h2>👨‍⚕️ Gestión de Personal Médico (Altas y Bajas)</h2>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Correo</th>
-        <th>Estado</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let doc of doctores">
-        <td>{{ doc.nombre }}</td>
-        <td>{{ doc.correo }}</td>
-        <td>{{ doc.activo ? 'Activo (Alta)' : 'Inactivo (Baja)' }}</td>
-        <td>
-          <button (click)="cambiarEstado(doc.id, doc.activo)">
-            {{ doc.activo ? 'Dar de Baja' : 'Dar de Alta' }}
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div *ngIf="mensaje" class="alert" [ngClass]="{'success': mensaje.includes('✅'), 'error': mensaje.includes('❌')}">
+    {{ mensaje }}
+  </div>
+
+  <!-- Formulario de Alta con el Select de Especialidades y Botón de Guardar -->
+  <form [formGroup]="medicoForm" (ngSubmit)="registrarMedico()" class="staff-form">
+    <h3>Registrar Nuevo Médico</h3>
+    <div class="form-grid">
+      <div class="field">
+        <label>Nombre Completo</label>
+        <input type="text" formControlName="nombre" placeholder="Dr. Juan Pérez">
+      </div>
+      <div class="field">
+        <label>Correo Electrónico</label>
+        <input type="email" formControlName="email" placeholder="medico@hospital.com">
+      </div>
+      <div class="field">
+        <label>Contraseña Temporal</label>
+        <input type="password" formControlName="password" placeholder="******">
+      </div>
+
+      <!-- Menú desplegable con checklist de especialidades -->
+      <div class="field">
+        <label>Especialidad</label>
+        <select formControlName="especialidad">
+          <option value="" disabled selected>Selecciona una especialidad...</option>
+          <option value="Medicina General">Medicina General</option>
+          <option value="Cirugía General">Cirugía General</option>
+          <option value="Cardiología">Cardiología</option>
+          <option value="Pediatría">Pediatría</option>
+          <option value="Ginecología y Obstetricia">Ginecología y Obstetricia</option>
+          <option value="Traumatología y Ortopedia">Traumatología y Ortopedia</option>
+          <option value="Medicina Interna">Medicina Interna</option>
+          <option value="Neurología">Neurología</option>
+          <option value="Dermatología">Dermatología</option>
+          <option value="Oftalmología">Oftalmología</option>
+          <option value="Otorrinolaringología">Otorrinolaringología</option>
+          <option value="Psiquiatría">Psiquiatría</option>
+          <option value="Urología">Urología</option>
+          <option value="Endocrinología">Endocrinología</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Botón para guardar / dar de alta -->
+    <button type="submit" class="btn-primary" [disabled]="medicoForm.invalid">Dar de Alta Médico</button>
+  </form>
+
+  <!-- Tabla para ver todos los doctores registrados -->
+  <div class="staff-list-section">
+    <h3>Plantilla de Especialistas</h3>
+    <div class="table-responsive">
+      <table class="staff-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Especialidad</th>
+            <th>Correo</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of medicos">
+            <td>Dr(a). {{ m.nombre }}</td>
+            <td>{{ m.especialidad }}</td>
+            <td>{{ m.email }}</td>
+            <td>
+              <span class="badge" [class.activo]="m.activo" [class.inactivo]="!m.activo">
+                {{ m.activo ? 'Activo' : 'Dado de Baja' }}
+              </span>
+            </td>
+            <td>
+              <button type="button" class="btn-action" (click)="cambiarEstado(m.id)">
+                {{ m.activo ? 'Dar de Baja 🔴' : 'Reactivar 🟢' }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>

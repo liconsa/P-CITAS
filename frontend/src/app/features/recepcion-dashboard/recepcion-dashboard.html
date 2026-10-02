@@ -1,29 +1,43 @@
-<div class="recepcion-container">
-    <header class="dashboard-header">
-        <div class="brand">
-            <div class="logo-box">HE</div>
-            <span>Hospital ESCOM - Recepción</span>
-        </div>
-        <button routerLink="/login" class="btn-logout">Cerrar Sesión</button>
-    </header>
+<div class="dashboard-wrapper">
 
-    <main class="dashboard-main">
-        <div class="welcome-card">
-            <h2>Control y Confirmación de Citas</h2>
-            <p>Apoya en la administración de pacientes, confirmaciones y cancelaciones extraordinarias.</p>
-        </div>
+  <!-- ENCABEZADO INSTITUCIONAL DE RECEPCIÓN -->
+  <div class="dashboard-header">
+    <div class="header-info">
+      <span class="icon">🏥</span>
+      <div>
+        <h2>Panel de Recepción y Administración</h2>
+        <p>Control general de personal médico, citas y asistencia hospitalaria.</p>
+      </div>
+    </div>
 
-        <div class="grid-actions">
-            <div class="action-card">
-                <h3>Buscar Cita por Folio o Paciente</h3>
-                <input type="text" placeholder="Ej. Juan Pérez">
-                <button class="btn-primary">Buscar Cita</button>
-            </div>
-            <div class="action-card">
-                <h3>Gestión de Personal Médico</h3>
-                <p>Consulta el estatus actual de los médicos en turno.</p>
-                <button class="btn-secondary">Ver Plantilla Médica</button>
-            </div>
-        </div>
-    </main>
+    <!-- PESTAÑAS DE NAVEGACIÓN INTERNA -->
+    <div class="dashboard-tabs">
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="vistaActiva === 'citas'"
+        (click)="cambiarVista('citas')">
+        📅 Control de Citas
+      </button>
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="vistaActiva === 'medicos'"
+        (click)="cambiarVista('medicos')">
+        👨‍⚕️ Gestión de Médicos
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTENEDOR DINÁMICO DE LAS VISTAS -->
+  <div class="dashboard-content">
+    <div *ngIf="vistaActiva === 'citas'" class="fade-in">
+      <app-appointment-mgmt></app-appointment-mgmt>
+    </div>
+
+    <div *ngIf="vistaActiva === 'medicos'" class="fade-in">
+      <app-staff-management></app-staff-management>
+    </div>
+  </div>
+
 </div>

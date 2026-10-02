@@ -78,6 +78,10 @@ export class MyHistoryComponent implements OnInit {
           this.historialForm.patchValue(data);
           if (data.curp) {
             this.curpVerificado = true;
+            // Si ya cuenta con CURP guardado previamente, lo mandamos directo al resumen
+            if (data.apellido_paterno) {
+              this.modoVista = 'resumen';
+            }
           }
         }
         this.cdr.detectChanges();
@@ -148,21 +152,23 @@ export class MyHistoryComponent implements OnInit {
 
   editarDatos() {
     this.modoVista = 'formulario';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   guardarHistorial() {
     if (this.historialForm.invalid) {
       this.mensajeError = 'Por favor completa todos los campos obligatorios.';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
-    // 1. Habilitar temporalmente los campos bloqueados por el CURP
+    // 1. Habilitar temporalmente los campos bloqueados por el CURP para serializarlos
     this.historialForm.get('fecha_nacimiento')?.enable();
     this.historialForm.get('edad')?.enable();
     this.historialForm.get('genero')?.enable();
     this.historialForm.get('lugar_nacimiento')?.enable();
 
-    // 2. Extraer todos los datos del formulario incluyendo los autocompletados
+    // 2. Extraer todos los datos del formulario con getRawValue()
     const formData = this.historialForm.getRawValue();
 
     // 3. Volver a bloquearlos para la interfaz visual
@@ -176,11 +182,13 @@ export class MyHistoryComponent implements OnInit {
         this.mensajeExito = '✅ Expediente clínico guardado y validado con éxito.';
         this.mensajeError = '';
         this.modoVista = 'resumen';
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Manda la pantalla arriba en modo resumen
         this.cdr.detectChanges();
       },
       error: () => {
         this.mensajeError = '❌ Error al guardar el expediente.';
         this.mensajeExito = '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         this.cdr.detectChanges();
       }
     });
