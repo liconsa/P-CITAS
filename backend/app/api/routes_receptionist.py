@@ -1,116 +1,112 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-# 👈 CAMBIO AQUÍ: Importamos el User, el DoctorProfile y tu Enum RolUsuario
-from app.models.user import User, DoctorProfile, RolUsuario
 from app.models.appointment import Appointment
-from datetime import datetime
+from app.models.jornada import Jornada
+from app.models.user import User, RolUsuario
+from app.api.routes_auth import get_current_user
 
 router = APIRouter(prefix="/receptionist", tags=["Recepcionista"])
 
 
 # ==========================================
-# 1. GESTIÓN DE MÉDICOS (Altas y Bajas)
-# ==========================================
-
-@router.get("/doctors-admin")
-def listar_todos_los_medicos(db: Session = Depends(get_db)):
-    # 👈 CAMBIO AQUÍ: Filtramos usando el Enum de SQLAlchemy
-    medicos = db.query(User).filter(User.rol == RolUsuario.MEDICO).all()
-    resultado = []
-    for m in medicos:
-        # 👈 CAMBIO AQUÍ: Buscamos la especialidad en la tabla relacionada (perfil_medico)
-        especialidad_asignada = m.perfil_medico.especialidad if getattr(m, "perfil_medico",
-                                                                        None) else "Sin especialidad"
-
-        resultado.append({
-            "id": m.id,
-            "nombre": m.nombre,
-            "email": getattr(m, "correo", "Sin correo"),
-            "especialidad": especialidad_asignada,
-            "activo": getattr(m, "activo", True)
-        })
-    return resultado
-
-
-@router.post("/doctors-register")
-def dar_de_alta_medico(data: dict, db: Session = Depends(get_db)):
-    # 👈 CAMBIO AQUÍ: 1. Creamos el registro en la tabla general de Usuarios
-    nuevo_usuario = User(
-        nombre=data.get("nombre"),
-        correo=data.get("email"),
-        hashed_password=data.get("password"),  # Guardamos la contraseña en la columna correcta
-        rol=RolUsuario.MEDICO,  # Usamos el Enum correspondiente
-        activo=True
-    )
-    db.add(nuevo_usuario)
-    db.flush()  # Guardamos temporalmente para que la BD le asigne un ID (nuevo_usuario.id)
-
-    # 👈 CAMBIO AQUÍ: 2. Creamos el registro en la tabla DoctorProfile usando ese ID
-    nuevo_perfil = DoctorProfile(
-        user_id=nuevo_usuario.id,
-        especialidad=data.get("especialidad", "Medicina General")
-    )
-    db.add(nuevo_perfil)
-
-    # Confirmamos ambas transacciones juntas
-    db.commit()
-    db.refresh(nuevo_usuario)
-
-    return {"mensaje": "Médico registrado con éxito", "id": nuevo_usuario.id}
-
-
-@router.post("/doctors/{medico_id}/toggle-status")
-def cambiar_estado_medico(medico_id: int, db: Session = Depends(get_db)):
-    medico = db.query(User).filter(User.id == medico_id, User.rol == RolUsuario.MEDICO).first()
-    if not medico:
-        raise HTTPException(status_code=404, detail="Médico no encontrado")
-
-    medico.activo = not getattr(medico, "activo", True)
-    db.commit()
-    return {"mensaje": f"Estado del médico actualizado correctamente. Activo: {medico.activo}"}
-
-
-# ==========================================
-# 2. GESTIÓN DE CITAS (Confirmación y Cancelación)
+# RUTAS DE LECTURA (PARA QUE CARGUE LA VISTA)
 # ==========================================
 
 @router.get("/appointments-all")
-def listar_todas_las_citas(db: Session = Depends(get_db)):
+def listar_todas_las_citas(usuario_actual: User = Depends(get_current_user), db: Session = Depends(get_db)):
     citas = db.query(Appointment).all()
     resultado = []
     for c in citas:
         paciente = db.query(User).filter(User.id == c.paciente_id).first()
         medico = db.query(User).filter(User.id == c.medico_id).first()
-
         resultado.append({
             "id": c.id,
-            "paciente_nombre": paciente.nombre if paciente else f"Paciente #{c.paciente_id}",
-            "medico_nombre": medico.nombre if medico else f"Médico #{c.medico_id}",
+            "paciente_id": c.paciente_id,
+            "medico_id": c.medico_id,
+            "paciente_nombre": paciente.nombre if paciente else "N/D",
+            "medico_nombre": medico.nombre if medico else "N/D",
             "fecha_hora": c.fecha_hora,
+            "precio": c.precio,
             "estado": c.estado,
-            "precio": c.precio
+            "folio_pago": c.folio_pago
         })
     return resultado
 
 
-@router.post("/appointments/{cita_id}/confirmar")
-def confirmar_cita(cita_id: int, db: Session = Depends(get_db)):
+@router.get("/appointments")
+def listar_citas_alternativa(usuario_actual: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    return listar_todas_las_citas(usuario_actual, db)
+
+
+@router.get("/doctors-admin")
+def listar_doctores_admin(usuario_actual: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    doctores = db.query(User).filter(User.rol == RolUsuario.MEDICO).all()
+    return [{
+        "id": d.id,
+        "nombre": d.nombre,
+        "email": getattr(d, "email", getattr(d, "username", "N/D")), # Validación segura para evitar el error
+        "activo": getattr(d, "activo", True),
+        "especialidad": getattr(d.perfil_medico, "especialidad", "Medicina General") if getattr(d, "perfil_medico", None) else "Medicina General"
+    } for d in doctores]
+
+
+# ==========================================
+# RUTAS DE ACCIÓN
+# ==========================================
+
+@router.post("/appointments/{cita_id}/cancel")
+def recepcionista_cancelar_cita(cita_id: int, usuario_actual: User = Depends(get_current_user),
+                                db: Session = Depends(get_db)):
     cita = db.query(Appointment).filter(Appointment.id == cita_id).first()
     if not cita:
-        raise HTTPException(status_code=404, detail="Cita no encontrada")
-
-    cita.estado = "CONFIRMADA"
-    db.commit()
-    return {"mensaje": "Cita confirmada exitosamente"}
-
-
-@router.post("/appointments/{cita_id}/cancelar")
-def cancelar_cita_recepcion(cita_id: int, db: Session = Depends(get_db)):
-    cita = db.query(Appointment).filter(Appointment.id == cita_id).first()
-    if not cita:
-        raise HTTPException(status_code=404, detail="Cita no encontrada")
+        raise HTTPException(status_code=404, detail="Cita no encontrada.")
 
     cita.estado = "CANCELADA"
+
+    jornada = db.query(Jornada).filter(
+        Jornada.medico_id == cita.medico_id,
+        Jornada.fecha_hora == cita.fecha_hora
+    ).first()
+    if jornada:
+        jornada.estado = "DISPONIBLE"
+
     db.commit()
-    return {"mensaje": "Cita cancelada por la recepcionista"}
+    return {"mensaje": "Cita cancelada y reembolso procesado por recepción."}
+
+
+@router.post("/doctors/{doctor_id}/toggle-status")
+def cambiar_estado_doctor(doctor_id: int, usuario_actual: User = Depends(get_current_user),
+                          db: Session = Depends(get_db)):
+    doctor = db.query(User).filter(User.id == doctor_id).first()
+    if not doctor:
+        raise HTTPException(status_code=404, detail="Médico no encontrado.")
+
+    estado_actual = getattr(doctor, "activo", True)
+    doctor.activo = not estado_actual
+
+    citas_afectadas = 0
+    if not doctor.activo:
+        citas_activas = db.query(Appointment).filter(
+            Appointment.medico_id == doctor_id,
+            Appointment.estado.in_(["PENDIENTE", "PAGADA", "PAGADO"])
+        ).all()
+
+        for cita in citas_activas:
+            cita.estado = "CANCELADA"
+            citas_afectadas += 1
+
+            jornada = db.query(Jornada).filter(
+                Jornada.medico_id == doctor_id,
+                Jornada.fecha_hora == cita.fecha_hora
+            ).first()
+            if jornada:
+                jornada.estado = "DISPONIBLE"
+
+    db.commit()
+
+    estado_texto = "activo" if doctor.activo else "dado de baja temporalmente"
+    return {
+        "mensaje": f"El médico ha sido {estado_texto}. Se cancelaron y reembolsaron {citas_afectadas} citas asociadas.",
+        "activo": doctor.activo
+    }

@@ -4,7 +4,7 @@
     <div class="card-header">
       <div class="icon-circle">🗓️</div>
       <h2>Gestión de Citas</h2>
-      <p class="subtitle">Consulta tus próximas consultas programadas y tu historial de citas pasadas.</p>
+      <p class="subtitle">Consulta tus consultas programadas, realiza el pago con tu comprobante y revisa tu historial.</p>
     </div>
 
     <!-- Alerta dinámica -->
@@ -12,35 +12,55 @@
       {{ mensaje }}
     </div>
 
-    <!-- SECCIÓN 1: CITAS PENDIENTES -->
+    <!-- SECCIÓN 1: CITAS ACTIVAS (PENDIENTES O PAGADAS) -->
     <div class="section-block">
-      <h3 class="section-title">📌 Citas Pendientes</h3>
+      <h3 class="section-title">📌 Citas Activas (Pendientes de pago o Confirmadas)</h3>
 
       <div class="table-container" *ngIf="citasPendientes.length > 0; else noPendientes">
         <table class="hospital-table">
           <thead>
             <tr>
-              <th>Folio</th>
+              <th>Folio Pago</th>
               <th>Fecha y Hora</th>
               <th>Médico</th>
               <th>Especialidad</th>
               <th>Costo</th>
               <th>Estado</th>
-              <th>Acción</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let cita of citasPendientes">
-              <td><strong>#{{ cita.id }}</strong></td>
+              <td>
+                <span class="folio-tag" *ngIf="cita.folio_pago; else sinFolio">{{ cita.folio_pago }}</span>
+                <ng-template #sinFolio><em>Sin folio</em></ng-template>
+              </td>
               <td>{{ cita.fecha_hora | date:'dd/MM/yyyy, h:mm a' }}</td>
               <td><strong>{{ cita.medico_nombre }}</strong></td>
               <td><span class="specialty-tag">{{ cita.medico_especialidad }}</span></td>
               <td>${{ cita.precio }}</td>
-              <td><span class="badge pending">{{ cita.estado }}</span></td>
               <td>
-                <button class="btn-danger" (click)="cancelarCita(cita.id)">
-                  Cancelar Cita
-                </button>
+                <span class="badge" [ngClass]="{
+                  'pending': cita.estado === 'PENDIENTE',
+                  'paid': cita.estado === 'PAGADA' || cita.estado === 'PAGADO'
+                }">
+                  {{ cita.estado }}
+                </span>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <!-- Botón Simular Pago si está pendiente -->
+                  <button *ngIf="cita.estado === 'PENDIENTE'"
+                          class="btn-pay"
+                          (click)="pagarCita(cita)">
+                    💳 Pagar
+                  </button>
+
+                  <!-- Botón Cancelar Cita con política de reembolso -->
+                  <button class="btn-danger" (click)="cancelarCita(cita.id)">
+                    Cancelar Cita
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -48,7 +68,7 @@
       </div>
 
       <ng-template #noPendientes>
-        <p class="empty-text">No tienes citas pendientes en este momento.</p>
+        <p class="empty-text">No tienes citas activas en este momento.</p>
       </ng-template>
     </div>
 
@@ -62,17 +82,21 @@
         <table class="hospital-table">
           <thead>
             <tr>
-              <th>Folio</th>
+              <th>Folio Pago</th>
               <th>Fecha y Hora</th>
               <th>Médico</th>
               <th>Especialidad</th>
               <th>Costo</th>
               <th>Estado</th>
+              <th>Reembolso</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let cita of citasHistorial">
-              <td><strong>#{{ cita.id }}</strong></td>
+              <td>
+                <span class="folio-tag" *ngIf="cita.folio_pago; else noFolioHistorial">{{ cita.folio_pago }}</span>
+                <ng-template #noFolioHistorial><em>-</em></ng-template>
+              </td>
               <td>{{ cita.fecha_hora | date:'dd/MM/yyyy, h:mm a' }}</td>
               <td><strong>{{ cita.medico_nombre }}</strong></td>
               <td><span class="specialty-tag">{{ cita.medico_especialidad }}</span></td>
@@ -80,6 +104,11 @@
               <td>
                 <span class="badge" [ngClass]="{'cancelled': cita.estado === 'CANCELADA', 'completed': cita.estado === 'COMPLETADA'}">
                   {{ cita.estado }}
+                </span>
+              </td>
+              <td>
+                <span class="reembolso-tag" [ngStyle]="{'color': cita.estado === 'CANCELADA' ? '#2e7d32' : '#6c757d'}">
+                  {{ cita.reembolso || 'N/A' }}
                 </span>
               </td>
             </tr>

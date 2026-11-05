@@ -9,9 +9,13 @@ class Appointment(Base):
     paciente_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     medico_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     fecha_hora = Column(DateTime, nullable=False)
-    estado = Column(String, default="PENDIENTE") # PENDIENTE, CANCELADA, COMPLETADA
-    precio = Column(Float, nullable=False)
+    estado = Column(String, default="PENDIENTE")  # PENDIENTE, PAGADA, CANCELADA, COMPLETADA
+    precio = Column(Float, nullable=False, default=500.0)
+    folio_pago = Column(String, nullable=True, unique=True, index=True)
+    jornada_id = Column(Integer, ForeignKey("jornadas.id"), nullable=True)
 
     # Relaciones ORM
     paciente = relationship("User", foreign_keys=[paciente_id])
     medico = relationship("User", foreign_keys=[medico_id])
+    jornada = relationship("Jornada", back_populates="cita")
+    receta = relationship("Prescription", back_populates="cita", uselist=False, cascade="all, delete-orphan")

@@ -1,59 +1,96 @@
-<div class="agenda-container">
-  <h2>📅 Mi Agenda de Consultas</h2>
+<div class="agenda-container" style="padding: 20px; max-width: 1200px; margin: 0 auto;">
+  <h2>📅 Mi Agenda de Consultas (Médico)</h2>
 
-  <div *ngIf="mensaje" class="alert" [ngClass]="{'success': mensaje.includes('✅'), 'error': mensaje.includes('❌')}">
+  <!-- Alerta dinámica -->
+  <div *ngIf="mensaje" class="alert" [ngClass]="{'success': mensaje.includes('✅') || mensaje.includes('📲'), 'error': mensaje.includes('❌')}" style="padding: 12px; margin-bottom: 15px; border-radius: 6px; background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc;">
     {{ mensaje }}
   </div>
 
-  <div *ngIf="cargando" class="loading">
+  <div *ngIf="cargando" class="loading" style="text-align: center; padding: 20px; font-weight: bold; color: #6c757d;">
     Cargando agenda...
   </div>
 
-  <div class="table-responsive" *ngIf="!cargando">
-    <table class="doctor-table">
+  <div class="table-responsive" *ngIf="!cargando" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid #e9ecef; overflow: hidden;">
+    <table class="doctor-table" style="width: 100%; border-collapse: collapse; text-align: left; table-layout: fixed; margin: 0;">
       <thead>
-        <tr>
-          <th>Paciente</th>
-          <th>Fecha y Hora</th>
-          <th>Estado</th>
-          <th>Acciones Operativas</th>
+        <tr style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6; color: #333;">
+          <th style="padding: 16px; width: 30%; border: none;">PACIENTE ID</th>
+          <th style="padding: 16px; width: 25%; border: none;">FECHA Y HORA</th>
+          <th style="padding: 16px; width: 20%; border: none;">ESTADO</th>
+          <th style="padding: 16px; width: 25%; text-align: center; border: none;">ACCIONES OPERATIVAS</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let cita of citas">
-          <td>{{ cita.paciente_nombre }}</td>
-
-          <!-- Usamos el pipe 'date' de Angular para formatear la fecha bonito -->
-          <td>{{ cita.fecha_hora | date:'dd/MM/yyyy, h:mm a' }}</td>
-
-          <td>
-            <span class="badge"
-                  [class.pendiente]="cita.estado === 'PENDIENTE'"
-                  [class.confirmada]="cita.estado === 'CONFIRMADA'"
-                  [class.completada]="cita.estado === 'COMPLETADA'">
+        <tr *ngFor="let cita of citas" style="border-bottom: 1px solid #e9ecef; height: 65px;">
+          <td style="padding: 14px; vertical-align: middle; word-break: break-word; border: none;">#{{ cita.id }} - {{ cita.paciente_nombre }}</td>
+          <td style="padding: 14px; vertical-align: middle; white-space: nowrap; border: none;">{{ cita.fecha_hora | date:'dd/MM/yyyy, h:mm a' }}</td>
+          <td style="padding: 14px; vertical-align: middle; border: none;">
+            <span class="badge" [ngClass]="cita.estado.toLowerCase()" style="padding: 6px 10px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; display: inline-block;">
               {{ cita.estado }}
             </span>
           </td>
+          <td style="padding: 14px; vertical-align: middle; text-align: center; border: none;" class="actions-cell">
 
-          <td class="actions-cell">
-            <!-- Solo mostramos acciones si la cita está confirmada por recepción -->
-            <ng-container *ngIf="cita.estado === 'CONFIRMADA'; else sinAcciones">
-              <button class="btn-expediente">Ver Expediente 📂</button>
-              <button class="btn-finalizar" (click)="finalizarCita(cita.id)">Finalizar ✔️</button>
+            <!-- Si la cita está PAGADA -->
+            <ng-container *ngIf="cita.estado === 'PAGADA' || cita.estado === 'PAGADO'">
+
+              <!-- Mostrar botón de finalizar solo si estanos en la hora de la consulta -->
+              <ng-container *ngIf="esHoraDeConsulta(cita.fecha_hora); else fueraDeHorario">
+
+                <button *ngIf="citaActivaId !== cita.id"
+                        class="btn-finalizar"
+                        (click)="iniciarFinalizacion(cita.id)"
+                        style="background-color: #00c853; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                  Finalizar con Código 🔑
+                </button>
+
+                <!-- Input y botones integrados -->
+                <div *ngIf="citaActivaId === cita.id" class="code-input-group" style="display: flex; gap: 4px; align-items: center; justify-content: center;">
+                  <input type="text"
+                         [(ngModel)]="codigoIngresado"
+                         placeholder="Código"
+                         maxlength="4"
+                         style="padding: 6px; width: 85px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.85rem;" />
+                  <button (click)="verificarYCompletar(cita.id)"
+                          style="background-color: #2e7d32; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight: bold;" title="Confirmar">
+                    ✔
+                  </button>
+                  <button (click)="cancelarIngreso()"
+                          style="background-color: #c62828; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight: bold;" title="Cancelar">
+                    ✖
+                  </button>
+                </div>
+
+              </ng-container>
+
+              <!-- Mensaje si la cita es para otro día u otra hora -->
+              <ng-template #fueraDeHorario>
+                <span style="color: #6c757d; font-size: 0.85rem; font-style: italic;">
+                  Disponible en su horario 🕒
+                </span>
+              </ng-template>
+
             </ng-container>
 
-            <!-- Template alterno para citas pendientes o completadas -->
-            <ng-template #sinAcciones>
-              <span class="text-muted-action">
-                {{ cita.estado === 'COMPLETADA' ? 'Consulta terminada' : 'Esperando a paciente' }}
-              </span>
-            </ng-template>
+            <!-- Estados alternativos -->
+            <span *ngIf="cita.estado === 'COMPLETADA'" style="color: #2e7d32; font-weight: bold; font-size: 0.9rem;">
+              Consulta Finalizada ✔️
+            </span>
+
+            <span *ngIf="cita.estado === 'PENDIENTE'" style="color: #ed6c02; font-weight: bold; font-size: 0.9rem;">
+              Esperando pago ⏳
+            </span>
+
+            <span *ngIf="cita.estado === 'CANCELADA'" style="color: #d32f2f; font-weight: bold; font-size: 0.9rem;">
+              Cancelada ❌
+            </span>
           </td>
         </tr>
 
-        <!-- Mensaje si la tabla está vacía -->
         <tr *ngIf="citas.length === 0">
-          <td colspan="4" class="empty-row">No tienes pacientes agendados por el momento.</td>
+          <td colspan="4" class="empty-row" style="text-align: center; padding: 30px; color: #6c757d; border: none;">
+            No tienes consultas asignadas actualmente.
+          </td>
         </tr>
       </tbody>
     </table>

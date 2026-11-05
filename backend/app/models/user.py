@@ -21,14 +21,18 @@ class User(Base):
     activo = Column(Boolean, default=True)
 
     # Relación "Uno a Uno" con el perfil del médico
-    perfil_medico = relationship("DoctorProfile", back_populates="usuario", uselist=False)
+    perfil_medico = relationship("DoctorProfile", back_populates="usuario", uselist=False, cascade="all, delete-orphan")
+
+    @property
+    def especialidad(self):
+        return self.perfil_medico.especialidad if self.perfil_medico else None
 
 # 🌟 NUEVA TABLA: Solo existe si el usuario es Médico
 class DoctorProfile(Base):
     __tablename__ = "doctor_profiles"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), unique=True) # Vinculado al User
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), unique=True) # Vinculado al User
     especialidad = Column(String, nullable=False, default="Medicina General")
 
     # Relación de vuelta al usuario

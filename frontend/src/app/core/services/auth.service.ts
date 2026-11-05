@@ -16,16 +16,17 @@ export class AuthService {
 
     // Redirigir según el rol especificado en el documento
     switch (rolNormalizado) {
-      case 'admin': // Coincide con el ENUM 'ADMIN' de la base de datos
+      case 'admin':
+      case 'administrador':
         this.router.navigate(['/admin']);
         break;
-      case 'recepcionista': // Coincide con 'RECEPCIONISTA'
+      case 'recepcionista':
         this.router.navigate(['/receptionist']);
         break;
-      case 'medico': // Coincide con 'MEDICO'
+      case 'medico':
         this.router.navigate(['/doctor']);
         break;
-      case 'paciente': // Coincide con 'PACIENTE'
+      case 'paciente':
         this.router.navigate(['/patient']);
         break;
       default:

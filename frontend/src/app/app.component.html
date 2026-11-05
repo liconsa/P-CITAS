@@ -18,13 +18,11 @@
         <li><a routerLink="/patient/dashboard" routerLinkActive="active">Inicio</a></li>
         <li><a routerLink="/patient/schedule" routerLinkActive="active">Agendar Cita</a></li>
         <li><a routerLink="/patient/appointments" routerLinkActive="active">Mis Citas Pendientes</a></li>
-        <li><a routerLink="/patient/history" routerLinkActive="active">Expediente Médico</a></li>
       </ng-container>
 
       <!-- Menú Médico -->
       <ng-container *ngIf="authService.obtenerRolActual() === 'medico'">
         <li><a routerLink="/doctor/agenda" routerLinkActive="active">Mi Agenda</a></li>
-        <li><a routerLink="/doctor/prescriptions" routerLinkActive="active">Generar Receta</a></li>
       </ng-container>
 
       <!-- Menú Recepcionista -->

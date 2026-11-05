@@ -1,11 +1,17 @@
+import sys
+from pathlib import Path
+
+# Asegurar que el directorio raíz del backend esté en sys.path al ejecutar directamente
+BACKEND_DIR = Path(__file__).resolve().parent.parent
+if str(BACKEND_DIR) not in sys.path:
+    sys.path.insert(0, str(BACKEND_DIR))
+
 from fastapi import FastAPI
 from app.core.database import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
-from app.models import user, appointment
+from app.models import user, appointment, jornada, prescription
 from app.models.medical_history import MedicalHistory
-# 1. Importa tu archivo de rutas de recepcionista (ajusta la ruta si está en otra carpeta, por ejemplo app.api o app.routers)
-from app.api import routes_auth, routes_patient, routes_doctor, routes_receptionist
-
+from app.api import routes_auth, routes_patient, routes_doctor, routes_receptionist, routes_admin
 
 Base.metadata.create_all(bind=engine)
 
@@ -15,10 +21,8 @@ app = FastAPI(title="Gestor de Citas Médicas API")
 app.include_router(routes_auth.router)
 app.include_router(routes_patient.router)
 app.include_router(routes_doctor.router)
-# 2. Regístralo aquí junto con las demás rutas
 app.include_router(routes_receptionist.router)
-
-app.include_router(routes_doctor.router)
+app.include_router(routes_admin.router)
 
 # Configuración estricta de CORS
 app.add_middleware(
@@ -28,3 +32,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

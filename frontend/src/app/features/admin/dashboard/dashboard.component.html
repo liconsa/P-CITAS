@@ -1,42 +1,372 @@
-<div class="admin-dashboard-container">
-  <h2>Panel de Administración (Control Total)</h2>
+<div class="admin-container">
+  <!-- Encabezado Principal -->
+  <header class="admin-header">
+    <div class="header-info">
+      <div class="badge-role">🛡️ Modo Administrador</div>
+      <h1>Panel de Control Hospitalario</h1>
+      <p class="subtitle">Gestión centralizada de personal, médicos y postulación de jornadas laborales.</p>
+    </div>
+  </header>
 
-  <div class="crear-usuario-section">
-    <h3>Registrar Nuevo Personal</h3>
-    <form [formGroup]="usuarioForm" (ngSubmit)="crearUsuario()">
-      <input type="text" formControlName="nombre" placeholder="Nombre completo" />
-      <input type="email" formControlName="correo" placeholder="Correo electrónico" />
-      <input type="password" formControlName="password" placeholder="Contraseña" />
-      <select formControlName="rol">
-        <option value="medico">Médico</option>
-        <option value="recepcionista">Recepcionista</option>
-        <option value="cajero">Cajero</option>
-        <option value="administrador">Administrador</option>
-      </select>
-      <button type="submit" [disabled]="usuarioForm.invalid">Registrar Usuario</button>
-    </form>
-    <p *ngIf="mensaje">{{ mensaje }}</p>
+  <!-- Tarjetas de Métricas Rápidas -->
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-icon blue">👨‍⚕️</div>
+      <div class="metric-data">
+        <span class="metric-value">{{ totalMedicos }}</span>
+        <span class="metric-label">Médicos Especialistas</span>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon green">📅</div>
+      <div class="metric-data">
+        <span class="metric-value">{{ totalJornadasDisponibles }}</span>
+        <span class="metric-label">Jornadas Disponibles</span>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon orange">⏳</div>
+      <div class="metric-data">
+        <span class="metric-value">{{ totalJornadasOcupadas }}</span>
+        <span class="metric-label">Horarios Ocupados/Pagados</span>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon purple">👥</div>
+      <div class="metric-data">
+        <span class="metric-value">{{ totalPacientes }}</span>
+        <span class="metric-label">Pacientes Registrados</span>
+      </div>
+    </div>
   </div>
 
-  <div class="lista-usuarios-section">
-    <h3>Usuarios Registrados en el Sistema</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Correo</th>
-          <th>Rol</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let user of usuarios">
-          <td>{{ user.id }}</td>
-          <td>{{ user.nombre }}</td>
-          <td>{{ user.correo }}</td>
-          <td>{{ user.rol }}</td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Banners de Notificaciones -->
+  <div *ngIf="mensajeExito" class="alert alert-success">
+    <span>✅ {{ mensajeExito }}</span>
+    <button (click)="mensajeExito = ''" class="close-alert">✕</button>
+  </div>
+  <div *ngIf="mensajeError" class="alert alert-error">
+    <span>⚠️ {{ mensajeError }}</span>
+    <button (click)="mensajeError = ''" class="close-alert">✕</button>
+  </div>
+
+  <!-- Navegación por Pestañas -->
+  <div class="tabs-nav">
+    <button
+      class="tab-btn"
+      [class.active]="pestanaActiva === 'jornadas'"
+      (click)="cambiarPestana('jornadas')">
+      📅 Postulación y Horarios de Médicos
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="pestanaActiva === 'usuarios'"
+      (click)="cambiarPestana('usuarios')">
+      👥 Gestión de Usuarios y Personal
+    </button>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- PESTAÑA 1: POSTULACIÓN Y GESTIÓN DE JORNADAS          -->
+  <!-- ===================================================== -->
+  <div *ngIf="pestanaActiva === 'jornadas'" class="tab-content">
+
+    <!-- Formulario para Crear / Postular Jornadas -->
+    <div class="card form-card">
+      <div class="card-header">
+        <div class="card-title">
+          <span class="icon">✨</span>
+          <div>
+            <h2>Crear Nueva Postulación de Jornada Laboral</h2>
+            <p>Habilita nuevos bloques y horarios de atención para los médicos especialistas.</p>
+          </div>
+        </div>
+      </div>
+
+      <form [formGroup]="jornadaForm" (ngSubmit)="crearJornadas()" class="form-grid">
+        <!-- Selección de Médico -->
+        <div class="form-group">
+          <label>Médico Especialista *</label>
+          <select formControlName="medico_id" class="input-control">
+            <option value="" disabled selected>-- Selecciona un médico --</option>
+            <option *ngFor="let m of medicos" [value]="m.id">
+              {{ m.nombre }} - ({{ m.especialidad }})
+            </option>
+          </select>
+        </div>
+
+        <!-- Fecha de la Jornada -->
+        <div class="form-group">
+          <label>Fecha de la Jornada *</label>
+          <input type="date" formControlName="fecha" class="input-control" />
+          <small class="hint">Recuerda que los pacientes requieren al menos 48h de anticipación.</small>
+        </div>
+
+        <!-- Duración en minutos -->
+        <div class="form-group">
+          <label>Duración por Cita (minutos)</label>
+          <input type="number" formControlName="duracion_minutos" class="input-control" min="15" max="120" step="15" />
+        </div>
+
+        <!-- Selección Interactiva de Horarios -->
+        <div class="form-group full-width">
+          <div class="hours-header">
+            <label>Horarios a Habilitar (Slots de Atención) *</label>
+            <div class="hours-quick-actions">
+              <button type="button" class="btn-link" (click)="seleccionarTodasLasHoras()">Seleccionar Todas</button>
+              <button type="button" class="btn-link" (click)="limpiarHoras()">Limpiar</button>
+            </div>
+          </div>
+
+          <div class="hours-chips">
+            <button
+              type="button"
+              *ngFor="let h of horasDisponibles"
+              class="chip-hour"
+              [class.selected]="estaHoraSeleccionada(h)"
+              (click)="toggleHora(h)">
+              {{ h }}
+              <span class="check" *ngIf="estaHoraSeleccionada(h)">✓</span>
+            </button>
+          </div>
+
+          <!-- Agregar hora extra personalizada -->
+          <div class="custom-hour-row">
+            <input
+              type="time"
+              [(ngModel)]="horaPersonalizada"
+              [ngModelOptions]="{standalone: true}"
+              class="input-control time-input" />
+            <button type="button" class="btn-secondary" (click)="agregarHoraPersonalizada()">
+              + Agregar Horario Extra
+            </button>
+          </div>
+
+          <div class="selected-summary" *ngIf="horasSeleccionadas.length > 0">
+            <strong>{{ horasSeleccionadas.length }}</strong> horario(s) seleccionado(s): {{ horasSeleccionadas.join(', ') }}
+          </div>
+        </div>
+
+        <!-- Botón de Envío -->
+        <div class="form-actions full-width">
+          <button type="submit" class="btn-primary" [disabled]="jornadaForm.invalid || horasSeleccionadas.length === 0">
+            🚀 Publicar Postulación de Jornada
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Listado y Filtros de Jornadas -->
+    <div class="card list-card">
+      <div class="card-header flex-between">
+        <div>
+          <h2>Jornadas y Horarios en el Sistema</h2>
+          <p>Supervisa todos los horarios aperturados y su estado actual de reserva.</p>
+        </div>
+        <button class="btn-secondary" (click)="cargarJornadas()">🔄 Actualizar</button>
+      </div>
+
+      <!-- Filtros de búsqueda -->
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label>Filtrar por Médico:</label>
+          <select [(ngModel)]="filtroMedicoId" (change)="cargarJornadas()" class="input-control">
+            <option value="">Todos los médicos</option>
+            <option *ngFor="let m of medicos" [value]="m.id">{{ m.nombre }}</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Filtrar por Fecha:</label>
+          <input type="date" [(ngModel)]="filtroFecha" (change)="cargarJornadas()" class="input-control" />
+        </div>
+        <div class="filter-group" *ngIf="filtroMedicoId || filtroFecha">
+          <button class="btn-link" (click)="filtroMedicoId = ''; filtroFecha = ''; cargarJornadas()">Limpiar Filtros</button>
+        </div>
+      </div>
+
+      <!-- Tabla de Jornadas -->
+      <div class="table-responsive">
+        <div *ngIf="cargandoJornadas" class="loading-state">
+          <span>⏳ Cargando jornadas...</span>
+        </div>
+
+        <table *ngIf="!cargandoJornadas" class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Médico Especialista</th>
+              <th>Fecha y Horario</th>
+              <th>Duración</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let j of jornadas">
+              <td>#{{ j.id }}</td>
+              <td>
+                <strong>{{ j.medico_nombre || 'Médico #' + j.medico_id }}</strong>
+              </td>
+              <td>{{ formatearFechaHora(j.fecha_hora) }}</td>
+              <td>{{ j.duracion_minutos }} min</td>
+              <td>
+                <span class="status-badge" [ngClass]="j.estado.toLowerCase()">
+                  {{ j.estado }}
+                </span>
+              </td>
+              <td>
+                <button
+                  *ngIf="j.estado === 'DISPONIBLE'"
+                  class="btn-danger-sm"
+                  (click)="eliminarJornada(j)"
+                  title="Eliminar este horario">
+                  🗑️ Eliminar
+                </button>
+                <span *ngIf="j.estado !== 'DISPONIBLE'" class="text-muted">
+                  Reservada
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="jornadas.length === 0">
+              <td colspan="6" class="empty-state">
+                No se encontraron jornadas con los filtros seleccionados.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- PESTAÑA 2: GESTIÓN DE USUARIOS Y PERSONAL             -->
+  <!-- ===================================================== -->
+  <div *ngIf="pestanaActiva === 'usuarios'" class="tab-content">
+
+    <!-- Formulario para Registrar Nuevo Usuario -->
+    <div class="card form-card">
+      <div class="card-header">
+        <div class="card-title">
+          <span class="icon">👤</span>
+          <div>
+            <h2>Registrar Nuevo Usuario / Personal</h2>
+            <p>Crea cuentas para médicos, recepcionistas, administradores o pacientes.</p>
+          </div>
+        </div>
+      </div>
+
+      <form [formGroup]="usuarioForm" (ngSubmit)="crearUsuario()" class="form-grid">
+        <div class="form-group">
+          <label>Nombre Completo *</label>
+          <input type="text" formControlName="nombre" placeholder="Ej. Dr. Mario Santos" class="input-control" />
+        </div>
+
+        <div class="form-group">
+          <label>Correo Electrónico *</label>
+          <input type="email" formControlName="correo" placeholder="correo@hospital.com" class="input-control" />
+        </div>
+
+        <div class="form-group">
+          <label>Contraseña *</label>
+          <input type="password" formControlName="password" placeholder="••••••••" class="input-control" />
+        </div>
+
+        <div class="form-group">
+          <label>Rol en el Sistema *</label>
+          <select formControlName="rol" class="input-control">
+            <option value="medico">Médico</option>
+            <option value="recepcionista">Recepcionista</option>
+            <option value="paciente">Paciente</option>
+            <option value="administrador">Administrador</option>
+          </select>
+        </div>
+
+        <div class="form-group" *ngIf="usuarioForm.value.rol === 'medico'">
+          <label>Especialidad Médica *</label>
+          <input type="text" formControlName="especialidad" placeholder="Ej. Cardiología, Pediatría..." class="input-control" />
+        </div>
+
+        <div class="form-actions full-width">
+          <button type="submit" class="btn-primary" [disabled]="usuarioForm.invalid">
+            ➕ Crear y Activar Usuario
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Lista de Usuarios Registrados -->
+    <div class="card list-card">
+      <div class="card-header flex-between">
+        <div>
+          <h2>Usuarios del Sistema Hospitalario</h2>
+          <p>Total de cuentas activas registradas en la base de datos.</p>
+        </div>
+        <button class="btn-secondary" (click)="cargarUsuarios()">🔄 Actualizar</button>
+      </div>
+
+      <!-- Filtros de usuarios -->
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label>Buscar por nombre o correo:</label>
+          <input type="text" [(ngModel)]="filtroBusquedaUsuario" placeholder="Buscar..." class="input-control" />
+        </div>
+        <div class="filter-group">
+          <label>Filtrar por Rol:</label>
+          <select [(ngModel)]="filtroRol" class="input-control">
+            <option value="todos">Todos los roles</option>
+            <option value="medico">Médicos</option>
+            <option value="recepcionista">Recepcionistas</option>
+            <option value="paciente">Pacientes</option>
+            <option value="administrador">Administradores</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Tabla de Usuarios -->
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Correo Electrónico</th>
+              <th>Rol</th>
+              <th>Especialidad / Detalle</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let u of usuariosFiltrados">
+              <td>#{{ u.id }}</td>
+              <td><strong>{{ u.nombre }}</strong></td>
+              <td>{{ u.correo }}</td>
+              <td>
+                <span class="role-badge" [ngClass]="u.rol.toLowerCase()">
+                  {{ u.rol }}
+                </span>
+              </td>
+              <td>{{ u.especialidad || '-' }}</td>
+              <td>
+                <span class="status-dot active">Activo</span>
+              </td>
+              <td>
+                <button
+                  class="btn-danger-sm"
+                  (click)="eliminarUsuario(u)"
+                  title="Eliminar usuario">
+                  🗑️ Eliminar
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="usuariosFiltrados.length === 0">
+              <td colspan="7" class="empty-state">
+                No se encontraron usuarios coincidentes.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>

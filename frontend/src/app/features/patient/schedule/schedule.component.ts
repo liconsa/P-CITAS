@@ -21,7 +21,7 @@ export class ScheduleComponent implements OnInit {
   doctores: any[] = [];
   horasDisponibles: string[] = [];
 
-  // 👈 Modificado: Ahora guardamos un diccionario con el conteo de citas por día (Ej: { 5: 2, 12: 6 })
+  // Conteo de citas ocupadas por día (ej. { 5: 2, 12: 6 })
   conteoDias: { [key: number]: number } = {};
   MAX_CITAS_DIA: number = 6;
   cargandoDoctores: boolean = false;
@@ -73,9 +73,10 @@ export class ScheduleComponent implements OnInit {
     this.cargarDiasOcupadosDelMes();
   }
 
-  // 👈 Modificado: Recibe el conteo de citas del backend
   cargarDiasOcupadosDelMes() {
     const doctorId = this.citaForm.get('medico_id')?.value;
+    if (!doctorId) return;
+
     const year = this.mesActual.getFullYear();
     const month = this.mesActual.getMonth() + 1;
 
@@ -103,30 +104,38 @@ export class ScheduleComponent implements OnInit {
     for (let i = 0; i < primerDia; i++) { this.diasCalendario.push(null); }
 
     const hoy = new Date();
-    const limite48h = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    // Regla de negocio: mínimo 48 horas de anticipación
+    const limite48h = new Date(hoy);
     limite48h.setDate(hoy.getDate() + 2);
-    limite48h.setHours(0, 0, 0, 0);
+
+    // Regla de negocio: máximo 3 meses (90 días) de anticipación
+    const limite3Meses = new Date(hoy);
+    limite3Meses.setDate(hoy.getDate() + 90);
 
     for (let i = 1; i <= diasEnMes; i++) {
       const fechaActual = new Date(year, month, i);
+      fechaActual.setHours(0, 0, 0, 0);
+
       const esPasado = fechaActual < limite48h;
+      const excede3Meses = fechaActual > limite3Meses;
       const esFinDeSemana = fechaActual.getDay() === 0 || fechaActual.getDay() === 6;
 
       const ocupadas = this.conteoDias[i] || 0;
       const estaLleno = ocupadas >= this.MAX_CITAS_DIA;
 
-      // Determinamos el estado visual para el HTML (disponible, parcial, lleno)
       let estadoColor = 'disponible';
       if (ocupadas > 0 && ocupadas < this.MAX_CITAS_DIA) {
-        estadoColor = 'parcial'; // Amarillo
+        estadoColor = 'parcial';
       } else if (estaLleno) {
-        estadoColor = 'lleno'; // Rojo
+        estadoColor = 'lleno';
       }
 
       this.diasCalendario.push({
         dia: i,
         fecha: fechaActual,
-        deshabilitado: esPasado || esFinDeSemana,
+        deshabilitado: esPasado || esFinDeSemana || excede3Meses,
         lleno: estaLleno,
         estado: estadoColor
       });
@@ -134,7 +143,22 @@ export class ScheduleComponent implements OnInit {
   }
 
   cambiarMes(direccion: number) {
-    this.mesActual = new Date(this.mesActual.getFullYear(), this.mesActual.getMonth() + direccion, 1);
+    const hoy = new Date();
+    const nuevaFecha = new Date(this.mesActual.getFullYear(), this.mesActual.getMonth() + direccion, 1);
+
+    // No permitir ir a meses pasados
+    const mesMinimo = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+    if (nuevaFecha < mesMinimo) {
+      return;
+    }
+
+    // No permitir ir a más de 3 meses hacia adelante
+    const mesMaximo = new Date(hoy.getFullYear(), hoy.getMonth() + 3, 1);
+    if (nuevaFecha > mesMaximo) {
+      return;
+    }
+
+    this.mesActual = nuevaFecha;
     this.diaSeleccionado = null;
     this.horaSeleccionada = '';
 
@@ -154,7 +178,6 @@ export class ScheduleComponent implements OnInit {
 
     const doctorId = this.citaForm.get('medico_id')?.value;
 
-    // Armado seguro de la fecha ISO local sin alteraciones de zona horaria
     const year = dia.fecha.getFullYear();
     const month = String(dia.fecha.getMonth() + 1).padStart(2, '0');
     const dayStr = String(dia.dia).padStart(2, '0');
@@ -163,17 +186,21 @@ export class ScheduleComponent implements OnInit {
     this.api.get(`patient/doctor/${doctorId}/available-hours?date=${fechaISO}`).subscribe({
       next: (data: any) => {
         this.horasDisponibles = data.horas || [];
+        if (data.mensaje) {
+          this.mensaje = `⚠️ ${data.mensaje}`;
+        } else {
+          this.mensaje = '';
+        }
         this.cdr.detectChanges();
       },
-      error: () => {
+      error: (err) => {
         this.horasDisponibles = [];
-        this.mensaje = 'Error al cargar horarios disponibles.';
+        this.mensaje = err.error?.detail || 'Error al cargar horarios disponibles.';
         this.cdr.detectChanges();
       }
     });
   }
 
-  // 👈 Modificado: Evita el desfase de hora asegurando el formato local exacto
   seleccionarHora(hora: string) {
     this.horaSeleccionada = hora;
 
@@ -181,24 +208,24 @@ export class ScheduleComponent implements OnInit {
     const month = String(this.diaSeleccionado.fecha.getMonth() + 1).padStart(2, '0');
     const day = String(this.diaSeleccionado.dia).padStart(2, '0');
 
-    // Construimos el string exacto en formato local (Ej: "2026-10-05T09:00:00")
     const fechaHoraLocal = `${year}-${month}-${day}T${hora}:00`;
-
     this.citaForm.patchValue({ fecha_hora: fechaHoraLocal });
   }
 
   agendar() {
     if (this.citaForm.valid) {
       this.api.post('patient/citas', this.citaForm.value).subscribe({
-        next: () => {
-          this.mensaje = '✅ Cita agendada con éxito.';
+        next: (res: any) => {
+          this.mensaje = `✅ Cita reservada con éxito (Estado: PENDIENTE). Folio de pago generado: ${res.folio_pago || 'Generado'}. Recuerda completar el pago para confirmar tu lugar.`;
           this.cargarDiasOcupadosDelMes();
           this.diaSeleccionado = null;
           this.horaSeleccionada = '';
+          this.citaForm.reset();
+          this.panelDerecho = 'vacio';
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.mensaje = err.error?.detail || '❌ Error al agendar la cita. El horario podría estar ocupado.';
+          this.mensaje = `❌ ${err.error?.detail || 'Error al agendar la cita. El horario podría estar ocupado o pendiente de pago.'}`;
           this.cdr.detectChanges();
         }
       });
