@@ -4,7 +4,7 @@ Un sistema integral orientado a objetos diseñado para modelar y automatizar la 
 
 ---
 
-## 🛠️ Arquitectura y Tecnologías
+## Arquitectura y Tecnologías
 
 El proyecto está estructurado en una arquitectura cliente-servidor desacoplada siguiendo principios de diseño limpio y separación de responsabilidades:
 
@@ -15,7 +15,7 @@ El proyecto está estructurado en una arquitectura cliente-servidor desacoplada 
 
 ---
 
-## 🏛️ Paradigmas de Programación y Patrones Aplicados
+## Paradigmas de Programación y Patrones Aplicados
 
 Este sistema demuestra la aplicación práctica de los pilares de la **Programación Orientada a Objetos (POO)** y **Programación Funcional**:
 
@@ -25,7 +25,7 @@ Este sistema demuestra la aplicación práctica de los pilares de la **Programac
 
 ---
 
-## 📋 Módulos y Funcionalidades Clave
+## Módulos y Funcionalidades Clave
 
 * **Gestión de Citas y Turnos:** Reserva, confirmación, atención y cancelación de citas médicas con validación de estados.
 * **Disponibilidad de Horarios:** Configuración de jornadas laborales, bloques de tiempo y reglas de agenda por médico.
